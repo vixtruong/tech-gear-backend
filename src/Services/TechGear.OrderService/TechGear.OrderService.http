@@ -1,0 +1,6 @@
+@TechGear.OrderService_HostAddress = http://localhost:5105
+
+GET {{TechGear.OrderService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

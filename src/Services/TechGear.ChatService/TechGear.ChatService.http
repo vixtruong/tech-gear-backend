@@ -1,0 +1,6 @@
+@TechGear.ChatService_HostAddress = http://localhost:5160
+
+GET {{TechGear.ChatService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
