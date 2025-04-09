@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35303.130
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TechGear.APIGateway", "src\API Gateway\TechGear.APIGateway\TechGear.APIGateway.csproj", "{CE2F9ACD-6154-4C99-A5CC-49D5B4411625}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TechGear.ApiGateway", "src\API Gateway\TechGear.APIGateway\TechGear.ApiGateway.csproj", "{CE2F9ACD-6154-4C99-A5CC-49D5B4411625}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechGear.AuthService", "src\Services\TechGear.AuthService\TechGear.AuthService.csproj", "{9886B362-0E80-4716-B44B-557604E9F8E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TechGear.AuthService", "src\Services\TechGear.AuthService\TechGear.AuthService.csproj", "{9886B362-0E80-4716-B44B-557604E9F8E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechGear.UserService", "src\Services\TechGear.UserService\TechGear.UserService.csproj", "{08B477A9-B4CF-4D11-985F-C8829B4FEA6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TechGear.UserService", "src\Services\TechGear.UserService\TechGear.UserService.csproj", "{08B477A9-B4CF-4D11-985F-C8829B4FEA6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechGear.ProductService", "src\Services\TechGear.ProductService\TechGear.ProductService.csproj", "{77DBB502-7B03-4120-9285-A640A97B9EAF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TechGear.ProductService", "src\Services\TechGear.ProductService\TechGear.ProductService.csproj", "{77DBB502-7B03-4120-9285-A640A97B9EAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechGear.OrderService", "src\Services\TechGear.OrderService\TechGear.OrderService.csproj", "{FA1DB0AC-672A-44D4-9383-A99AA3E578DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TechGear.OrderService", "src\Services\TechGear.OrderService\TechGear.OrderService.csproj", "{FA1DB0AC-672A-44D4-9383-A99AA3E578DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechGear.ChatService", "src\Services\TechGear.ChatService\TechGear.ChatService.csproj", "{DC81AC64-2EB0-4231-93DE-A538388A97DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TechGear.ChatService", "src\Services\TechGear.ChatService\TechGear.ChatService.csproj", "{DC81AC64-2EB0-4231-93DE-A538388A97DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
