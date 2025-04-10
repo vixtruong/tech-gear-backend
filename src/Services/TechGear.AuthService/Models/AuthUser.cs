@@ -9,7 +9,7 @@ public partial class AuthUser
 
     public int UserId { get; set; }
 
-    public string Username { get; set; } = null!;
+    public string Email { get; set; } = null!;
 
     public string HashedPassword { get; set; } = null!;
 

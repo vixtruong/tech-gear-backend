@@ -13,8 +13,6 @@ public partial class ProductItem
 
     public int QtyInStock { get; set; }
 
-    public string? Description { get; set; }
-
     public string? ProductImage { get; set; }
 
     public virtual Product Product { get; set; } = null!;

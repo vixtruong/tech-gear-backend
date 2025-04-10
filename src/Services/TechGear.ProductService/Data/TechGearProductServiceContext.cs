@@ -24,8 +24,6 @@ public partial class TechGearProductServiceContext : DbContext
 
     public virtual DbSet<ProductItem> ProductItems { get; set; }
 
-    public virtual DbSet<ProductReview> ProductReviews { get; set; }
-
     public virtual DbSet<Rating> Ratings { get; set; }
 
     public virtual DbSet<Variation> Variations { get; set; }
@@ -58,6 +56,7 @@ public partial class TechGearProductServiceContext : DbContext
                 .HasColumnType("datetime");
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.ProductImage).HasMaxLength(255);
+            entity.Property(e => e.Description).HasMaxLength(255);
 
             entity.HasOne(d => d.Brand).WithMany(p => p.Products)
                 .HasForeignKey(d => d.BrandId)
@@ -74,11 +73,14 @@ public partial class TechGearProductServiceContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__ProductI__3214EC07E9AEF4E9");
 
-            entity.Property(e => e.Description).HasMaxLength(255);
             entity.Property(e => e.ProductImage).HasMaxLength(255);
             entity.Property(e => e.Sku)
                 .HasMaxLength(50)
                 .HasColumnName("SKU");
+            entity.Property(e => e.QtyInStock)
+                .HasColumnType("int")
+                .HasDefaultValue(0)
+                .IsRequired();
 
             entity.HasOne(d => d.Product).WithMany(p => p.ProductItems)
                 .HasForeignKey(d => d.ProductId)
@@ -101,20 +103,6 @@ public partial class TechGearProductServiceContext : DbContext
                         j.HasKey("ProductItemId", "VariationOptionId").HasName("PK__ProductC__BD1742746C447134");
                         j.ToTable("ProductConfigurations");
                     });
-        });
-
-        modelBuilder.Entity<ProductReview>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("PK__ProductR__3214EC07FFCB0441");
-
-            entity.Property(e => e.Timestamp)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
-
-            entity.HasOne(d => d.Product).WithMany(p => p.ProductReviews)
-                .HasForeignKey(d => d.ProductId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__ProductRe__Produ__3B75D760");
         });
 
         modelBuilder.Entity<Rating>(entity =>

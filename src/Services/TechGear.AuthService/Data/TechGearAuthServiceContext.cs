@@ -26,13 +26,13 @@ public partial class TechGearAuthServiceContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__AuthUser__3214EC070ED0C5B1");
 
-            entity.HasIndex(e => e.Username, "UQ__AuthUser__536C85E41EC3B0C8").IsUnique();
+            entity.HasIndex(e => e.Email, "UQ__AuthUser__536C85E41EC3B0C8").IsUnique();
 
             entity.Property(e => e.HashedPassword).HasMaxLength(255);
             entity.Property(e => e.Role)
                 .HasMaxLength(50)
                 .HasDefaultValue("User");
-            entity.Property(e => e.Username).HasMaxLength(100);
+            entity.Property(e => e.Email).HasMaxLength(255);
         });
 
         modelBuilder.Entity<RefreshToken>(entity =>
@@ -41,6 +41,11 @@ public partial class TechGearAuthServiceContext : DbContext
 
             entity.Property(e => e.ExpiryDate).HasColumnType("datetime");
             entity.Property(e => e.Token).HasMaxLength(255);
+
+            entity.Property(e => e.IsRevoked)
+                .IsRequired()
+                .HasDefaultValue(false);
+
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -1,6 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using TechGear.UserService.Data;
+using TechGear.UserService.Interfaces;
 
 namespace TechGear.UserService
 {
@@ -16,6 +17,8 @@ namespace TechGear.UserService
                 options.UseSqlServer(connectionString));
 
             builder.Services.AddControllers();
+
+            builder.Services.AddScoped<IUserService, Services.UserService>();
 
             var app = builder.Build();
 

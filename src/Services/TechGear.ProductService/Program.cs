@@ -1,6 +1,8 @@
 
 using Microsoft.EntityFrameworkCore;
 using TechGear.ProductService.Data;
+using TechGear.ProductService.Interfaces;
+using TechGear.ProductService.Services;
 
 namespace TechGear.ProductService
 {
@@ -17,6 +19,10 @@ namespace TechGear.ProductService
 
 
             builder.Services.AddControllers();
+
+            // Register services
+            builder.Services.AddScoped<IBrandService, BrandService>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
 
             var app = builder.Build();
 

@@ -1,6 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using TechGear.AuthService.Data;
+using TechGear.AuthService.Interfaces;
 
 namespace TechGear.AuthService
 {
@@ -17,6 +18,13 @@ namespace TechGear.AuthService
 
             // Add services to the container.
             builder.Services.AddControllers();
+
+            builder.Services.AddScoped<IAuthService, Services.AuthService>();
+
+            builder.Services.AddHttpClient("UserServiceClient", client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:5006");
+            });
 
             var app = builder.Build();
 

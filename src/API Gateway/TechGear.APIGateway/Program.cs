@@ -1,5 +1,6 @@
 ﻿
 using Ocelot.DependencyInjection;
+using Ocelot.Middleware;
 
 namespace TechGear.APIGateway
 {
@@ -20,7 +21,7 @@ namespace TechGear.APIGateway
 
             app.UseAuthorization();
 
-            app.MapControllers();
+            app.UseOcelot().Wait();
 
             app.Run();
         }
