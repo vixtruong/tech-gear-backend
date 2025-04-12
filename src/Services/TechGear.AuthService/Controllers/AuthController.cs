@@ -5,9 +5,9 @@ using TechGear.AuthService.Models;
 
 namespace TechGear.AuthService.Controllers
 {
-    [Route("api/auth")]
+    [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : Controller
+    public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
         private readonly IHttpClientFactory _httpClientFactory;

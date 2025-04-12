@@ -23,6 +23,13 @@ namespace TechGear.ProductService
             // Register services
             builder.Services.AddScoped<IBrandService, BrandService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<IProductService, Services.ProductService>();
+            builder.Services.AddScoped<IProductItemService, ProductItemService>();
+            builder.Services.AddScoped<IProductConfigService, ProductConfigService>();
+            builder.Services.AddScoped<IVariationService, VariationService>();
+            builder.Services.AddScoped<IVariationOptionService, VariationOptionService>();
+            builder.Services.AddScoped<IProductConfigService, ProductConfigService>();
+            builder.Services.AddScoped<IRatingService, RatingService>();
 
             var app = builder.Build();
 

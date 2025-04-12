@@ -4,9 +4,9 @@ using TechGear.UserService.Interfaces;
 
 namespace TechGear.UserService.Controllers
 {
-    [Route("api/user")]
+    [Route("api/[controller]")]
     [ApiController]
-    public class UserController : Controller
+    public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
 

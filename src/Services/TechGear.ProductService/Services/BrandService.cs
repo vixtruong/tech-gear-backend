@@ -18,7 +18,7 @@ namespace TechGear.ProductService.Services
         public async Task<Brand?> GetBrandByNameAsync(string name)
         {
             return await _context.Brands
-                .Where(b =>  b.Name.ToLower().Equals(name.ToLower()))
+                .Where(b => b.Name.ToLower().Equals(name.ToLower()))
                 .FirstOrDefaultAsync();
         }
 

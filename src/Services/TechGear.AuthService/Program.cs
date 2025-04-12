@@ -23,7 +23,7 @@ namespace TechGear.AuthService
 
             builder.Services.AddHttpClient("UserServiceClient", client =>
             {
-                client.BaseAddress = new Uri("https://localhost:5006");
+                client.BaseAddress = new Uri("https://localhost:5001");
             });
 
             var app = builder.Build();

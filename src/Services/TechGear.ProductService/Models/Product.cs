@@ -15,11 +15,13 @@ public partial class Product
 
     public string? Description { get; set; }
 
-    public string? ProductImage { get; set; }
+    public string ProductImage { get; set; } = null!;
 
     public DateTime CreateAt { get; set; }
 
     public bool Available { get; set; }
+
+    public int Price { get; set; }
 
     public virtual Brand Brand { get; set; } = null!;
 

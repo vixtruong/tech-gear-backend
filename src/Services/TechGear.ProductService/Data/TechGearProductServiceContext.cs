@@ -20,7 +20,9 @@ public partial class TechGearProductServiceContext : DbContext
 
     public virtual DbSet<Category> Categories { get; set; }
 
-    public virtual DbSet<Product> Products { get; set; }
+    public virtual DbSet<Product?> Products { get; set; }
+
+    public virtual DbSet<ProductConfiguration> ProductConfigurations { get; set; }
 
     public virtual DbSet<ProductItem> ProductItems { get; set; }
 
@@ -56,7 +58,6 @@ public partial class TechGearProductServiceContext : DbContext
                 .HasColumnType("datetime");
             entity.Property(e => e.Name).HasMaxLength(100);
             entity.Property(e => e.ProductImage).HasMaxLength(255);
-            entity.Property(e => e.Description).HasMaxLength(255);
 
             entity.HasOne(d => d.Brand).WithMany(p => p.Products)
                 .HasForeignKey(d => d.BrandId)
@@ -69,40 +70,38 @@ public partial class TechGearProductServiceContext : DbContext
                 .HasConstraintName("FK__Products__Catego__286302EC");
         });
 
+        modelBuilder.Entity<ProductConfiguration>(entity =>
+        {
+            entity.HasKey(e => new { e.ProductItemId, e.VariationOptionId }).HasName("PK__ProductC__BD1742746C447134");
+
+            entity.Property(e => e.CreateAt).HasColumnType("datetime");
+
+            entity.HasOne(d => d.ProductItem).WithMany(p => p.ProductConfigurations)
+                .HasForeignKey(d => d.ProductItemId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__ProductCo__Produ__37A5467C");
+
+            entity.HasOne(d => d.VariationOption).WithMany(p => p.ProductConfigurations)
+                .HasForeignKey(d => d.VariationOptionId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__ProductCo__Varia__38996AB5");
+        });
+
         modelBuilder.Entity<ProductItem>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__ProductI__3214EC07E9AEF4E9");
 
+            entity.Property(e => e.Available).HasDefaultValue(true);
+            entity.Property(e => e.CreateAt).HasColumnType("datetime");
             entity.Property(e => e.ProductImage).HasMaxLength(255);
             entity.Property(e => e.Sku)
                 .HasMaxLength(50)
                 .HasColumnName("SKU");
-            entity.Property(e => e.QtyInStock)
-                .HasColumnType("int")
-                .HasDefaultValue(0)
-                .IsRequired();
 
             entity.HasOne(d => d.Product).WithMany(p => p.ProductItems)
                 .HasForeignKey(d => d.ProductId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__ProductIt__Produ__2E1BDC42");
-
-            entity.HasMany(d => d.VariationOptions).WithMany(p => p.ProductItems)
-                .UsingEntity<Dictionary<string, object>>(
-                    "ProductConfiguration",
-                    r => r.HasOne<VariationOption>().WithMany()
-                        .HasForeignKey("VariationOptionId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__ProductCo__Varia__38996AB5"),
-                    l => l.HasOne<ProductItem>().WithMany()
-                        .HasForeignKey("ProductItemId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK__ProductCo__Produ__37A5467C"),
-                    j =>
-                    {
-                        j.HasKey("ProductItemId", "VariationOptionId").HasName("PK__ProductC__BD1742746C447134");
-                        j.ToTable("ProductConfigurations");
-                    });
         });
 
         modelBuilder.Entity<Rating>(entity =>
@@ -113,6 +112,10 @@ public partial class TechGearProductServiceContext : DbContext
                 .HasForeignKey(d => d.ProductId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Ratings__Product__403A8C7D");
+
+            entity.Property(e => e.LastUpdate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
         });
 
         modelBuilder.Entity<Variation>(entity =>

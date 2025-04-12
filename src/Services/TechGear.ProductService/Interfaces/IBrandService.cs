@@ -1,4 +1,5 @@
-﻿using TechGear.ProductService.Models;
+﻿
+using TechGear.ProductService.Models;
 
 namespace TechGear.ProductService.Interfaces
 {

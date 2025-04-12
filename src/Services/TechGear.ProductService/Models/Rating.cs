@@ -15,5 +15,7 @@ public partial class Rating
 
     public string? Content { get; set; }
 
+    public DateTime LastUpdate { get; set; }
+
     public virtual Product Product { get; set; } = null!;
 }
