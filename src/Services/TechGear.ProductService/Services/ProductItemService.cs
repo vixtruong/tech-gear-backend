@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TechGear.ProductService.Data;
+using TechGear.ProductService.DTOs;
 using TechGear.ProductService.Interfaces;
 using TechGear.ProductService.Models;
 
@@ -14,6 +15,25 @@ namespace TechGear.ProductService.Services
             return await _context.ProductItems.ToListAsync();
         }
 
+        public async Task<IEnumerable<ProductItemInfoDto?>> GetProductItemsByIdsAsync(List<int>? ids)
+        {
+            if (ids == null || !ids.Any())
+                return Enumerable.Empty<ProductItemInfoDto>();
+
+            var productItems = await _context.ProductItems
+                .Where(p => ids.Contains(p.Id))
+                .Select(p => new ProductItemInfoDto
+                {
+                    ProductName = p.Product.Name,
+                    Sku = p.Sku,
+                    ImageUrl = p.Product.ProductImage,
+                    Price = p.Price
+                })
+                .ToListAsync();
+
+            return productItems;
+        }
+
         public async Task<ProductItem?> GetProductItemByIdAsync(int id)
         {
             return await _context.ProductItems.FirstOrDefaultAsync(pi => pi.Id == id);
@@ -24,19 +44,30 @@ namespace TechGear.ProductService.Services
             return await _context.ProductItems.Where(pi => pi.ProductId == productId).ToListAsync();
         }
 
-        public async Task<ProductItem?> AddProductItemAsync(ProductItem productItem)
+        public async Task<ProductItem?> AddProductItemAsync(ProductItemDto productItem)
         {
             var existItem = await _context.ProductItems.FirstOrDefaultAsync(pi => pi.Sku == productItem.Sku);
-
             if (existItem != null) return null;
 
-            _context.ProductItems.Add(productItem);
+            var entity = new ProductItem
+            {
+                Sku = productItem.Sku,
+                QtyInStock = productItem.QtyInStock,
+                ProductImage = productItem.ProductImage,
+                Price = productItem.Price,
+                Available = productItem.Available,
+                CreateAt = productItem.CreateAt,
+                ProductId = productItem.ProductId
+            };
+
+            _context.ProductItems.Add(entity);
             await _context.SaveChangesAsync();
 
-            return productItem;
+            return entity;
         }
 
-        public async Task<bool> UpdateProductItemAsync(ProductItem productItem)
+
+        public async Task<bool> UpdateProductItemAsync(ProductItemDto productItem)
         {
             var existItem = await _context.ProductItems.FindAsync(productItem.Id);
 

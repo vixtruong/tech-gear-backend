@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using TechGear.OrderService.Data;
+using TechGear.OrderService.Interfaces;
+using TechGear.OrderService.Services;
 
 namespace TechGear.OrderService
 {
@@ -47,6 +49,13 @@ namespace TechGear.OrderService
             });
 
             builder.Services.AddControllers();
+
+            builder.Services.AddScoped<ICartService, CartService>();
+
+            builder.Services.AddHttpClient("ApiGatewayClient", client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:5001");
+            });
 
             var app = builder.Build();
 

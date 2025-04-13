@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TechGear.ProductService.Data;
+using TechGear.ProductService.DTOs;
 using TechGear.ProductService.Interfaces;
 using TechGear.ProductService.Models;
 
@@ -19,18 +20,30 @@ namespace TechGear.ProductService.Services
             return await _context.ProductConfigurations.Where(pc => pc.ProductItemId == productItemId).ToListAsync();
         }
 
-        public async Task<bool> AddProductConfigAsync(ProductConfiguration productConfiguration)
+        public async Task<bool> AddProductConfigsAsync(List<ProductConfigDto> productConfiguration)
         {
-            var existConfig = await _context.ProductConfigurations
-                .FirstOrDefaultAsync(pc => pc.ProductItemId == productConfiguration.ProductItemId
-                                           && pc.VariationOptionId == productConfiguration.VariationOptionId);
+            foreach (var config in productConfiguration)
+            {
+                var existConfig = await _context.ProductConfigurations
+                    .FirstOrDefaultAsync(pc =>
+                        pc.ProductItemId == config.ProductItemId &&
+                        pc.VariationOptionId == config.VariationOptionId);
 
-            if (existConfig != null) return false;
+                if (existConfig != null)
+                    continue;
 
-            _context.ProductConfigurations.Add(productConfiguration);
+                var entity = new ProductConfiguration
+                {
+                    ProductItemId = config.ProductItemId,
+                    VariationOptionId = config.VariationOptionId,
+                };
+
+                _context.ProductConfigurations.Add(entity);
+            }
+
             await _context.SaveChangesAsync();
-
             return true;
         }
+
     }
 }

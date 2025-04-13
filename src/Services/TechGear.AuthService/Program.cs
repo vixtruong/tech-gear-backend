@@ -53,7 +53,7 @@ namespace TechGear.AuthService
 
             builder.Services.AddScoped<IAuthService, Services.AuthService>();
 
-            builder.Services.AddHttpClient("UserServiceClient", client =>
+            builder.Services.AddHttpClient("ApiGatewayClient", client =>
             {
                 client.BaseAddress = new Uri("https://localhost:5001");
             });

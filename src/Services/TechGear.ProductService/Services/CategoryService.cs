@@ -34,6 +34,8 @@ namespace TechGear.ProductService.Services
             }
 
             await _context.Categories.AddAsync(new Category { Name = name });
+            await _context.SaveChangesAsync();
+
             return true;
         }
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TechGear.ProductService.DTOs;
 using TechGear.ProductService.Interfaces;
 using TechGear.ProductService.Models;
 
@@ -32,13 +33,12 @@ namespace TechGear.ProductService.Controllers
         }
 
         [HttpPost("add")]
-        public async Task<IActionResult> AddProductConfig([FromBody] ProductConfiguration config)
+        public async Task<IActionResult> AddProductConfigs([FromBody] List<ProductConfigDto> configs)
         {
-            var added = await _productConfigService.AddProductConfigAsync(config);
+            var added = await _productConfigService.AddProductConfigsAsync(configs);
+
             if (!added)
-            {
-                return BadRequest(new { message = "Product config already exists." });
-            }
+                return BadRequest(new { message = "Duplicate config found." });
 
             return Ok(added);
         }

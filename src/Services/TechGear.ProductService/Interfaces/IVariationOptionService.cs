@@ -1,4 +1,5 @@
-﻿using TechGear.ProductService.Models;
+﻿using TechGear.ProductService.DTOs;
+using TechGear.ProductService.Models;
 
 namespace TechGear.ProductService.Interfaces
 {
@@ -8,8 +9,8 @@ namespace TechGear.ProductService.Interfaces
         Task<IEnumerable<VariationOption>> GetAllVariationOptionsByVariationIdAsync(int variationId);
         Task<VariationOption?> GetVariationOptionByIdAsync(int optionId);
         Task<VariationOption?> GetVariationOptionByValueAsync(string value);
-        Task<VariationOption?> AddVariationOptionAsync(VariationOption variationOption);
-        Task<bool> UpdateVariationOptionAsync(VariationOption variationOption);
+        Task<VariationOption?> AddVariationOptionAsync(VariationOptionDto variationOption);
+        Task<bool> UpdateVariationOptionAsync(VariationOptionDto variationOption);
         Task<bool> RemoveVariationOptionAsync(int optionId);
     }
 }

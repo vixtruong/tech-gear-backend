@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.EntityFrameworkCore;
 using TechGear.ProductService.Data;
+using TechGear.ProductService.DTOs;
 using TechGear.ProductService.Interfaces;
 using TechGear.ProductService.Models;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
@@ -30,18 +32,24 @@ namespace TechGear.ProductService.Services
             return await _context.Variations.Where(v => v.CategoryId == cateId).ToListAsync();
         }
 
-        public async Task<Variation?> AddVariationAsync(Variation variation)
+        public async Task<Variation?> AddVariationAsync(VariationDto variation)
         {
             var existVariation = await _context.Variations.FirstOrDefaultAsync(v => v.Name == variation.Name);
             if (existVariation != null) return null;
 
-            _context.Variations.Add(variation);
+            var newVariation = new Variation
+            {
+                CategoryId = variation.CategoryId,
+                Name = variation.Name,
+            };
+            
+            _context.Variations.Add(newVariation);
             await _context.SaveChangesAsync();
 
-            return variation;
+            return newVariation;
         }
 
-        public async Task<bool> UpdateVariationAsync(Variation variation)
+        public async Task<bool> UpdateVariationAsync(VariationDto variation)
         {
             var existVariation = await _context.Variations.FindAsync(variation.Id);
 

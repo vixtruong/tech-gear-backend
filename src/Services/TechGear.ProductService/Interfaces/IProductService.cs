@@ -1,4 +1,5 @@
-﻿using TechGear.ProductService.Models;
+﻿using TechGear.ProductService.DTOs;
+using TechGear.ProductService.Models;
 
 namespace TechGear.ProductService.Interfaces
 {
@@ -6,8 +7,8 @@ namespace TechGear.ProductService.Interfaces
     {
         Task<IEnumerable<Product?>> GetAllProductsAsync();
         Task<Product?> GetProductByIdAsync(int productId);
-        Task<Product?> AddProductAsync(Product product);
-        Task<bool> UpdateProductAsync(Product product);
+        Task<Product?> AddProductAsync(ProductDto product);
+        Task<bool> UpdateProductAsync(ProductDto product);
         Task<bool> UpdateProductStatus(int id);
         Task<bool> DeleteProductAsync(int id);
         Task<bool> IsAvailableAsync(int productId);

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using TechGear.ProductService.Data;
+using TechGear.ProductService.DTOs;
 using TechGear.ProductService.Interfaces;
 using TechGear.ProductService.Models;
 
@@ -30,20 +31,26 @@ namespace TechGear.ProductService.Services
             return await _context.VariationOptions.FirstOrDefaultAsync(vo => vo.Value == value);
         }
 
-        public async Task<VariationOption?> AddVariationOptionAsync(VariationOption variationOption)
+        public async Task<VariationOption?> AddVariationOptionAsync(VariationOptionDto variationOption)
         {
             var existOption =
                 await _context.VariationOptions.FirstOrDefaultAsync(vo => vo.Value == variationOption.Value);
 
             if (existOption != null) return null;
 
-            _context.VariationOptions.Add(variationOption);
+            var entity = new VariationOption
+            {
+                VariationId = variationOption.VariationId,
+                Value = variationOption.Value,
+            };
+
+            _context.VariationOptions.Add(entity);
             await _context.SaveChangesAsync();
 
-            return variationOption;
+            return entity;
         }
 
-        public async Task<bool> UpdateVariationOptionAsync(VariationOption variationOption)
+        public async Task<bool> UpdateVariationOptionAsync(VariationOptionDto variationOption)
         {
             var existOption = await _context.VariationOptions.FindAsync(variationOption.Id);
 

@@ -22,7 +22,7 @@ namespace TechGear.AuthService.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto user)
         {
             // Call api from UserService to create User then create Account with userId
-            var client = _httpClientFactory.CreateClient("UserServiceClient");
+            var client = _httpClientFactory.CreateClient("ApiGatewayClient");
 
             var userDto = new UserDto
             {

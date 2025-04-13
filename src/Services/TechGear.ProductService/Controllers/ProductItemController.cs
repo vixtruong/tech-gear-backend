@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TechGear.ProductService.DTOs;
 using TechGear.ProductService.Interfaces;
 using TechGear.ProductService.Models;
 
@@ -23,6 +24,17 @@ namespace TechGear.ProductService.Controllers
             return Ok(productItems);
         }
 
+        [HttpPost("get-by-ids")]
+        public async Task<IActionResult> GetProductItemsInfo([FromBody] List<int>? ids)
+        {
+            if (ids == null || !ids.Any())
+                return BadRequest("List ID invalid.");
+
+            var productItemsInfo = await _productItemService.GetProductItemsByIdsAsync(ids);
+
+            return Ok(productItemsInfo);
+        }
+
         [HttpGet("by-productId/{productId}")]
         public async Task<IActionResult> GetProductItemsByProductId(int productId)
         {
@@ -44,7 +56,7 @@ namespace TechGear.ProductService.Controllers
         }
 
         [HttpPost("add")]
-        public async Task<IActionResult> AddProductItem([FromBody] ProductItem item)
+        public async Task<IActionResult> AddProductItem([FromBody] ProductItemDto item)
         {
             var newItem = await _productItemService.AddProductItemAsync(item);
 

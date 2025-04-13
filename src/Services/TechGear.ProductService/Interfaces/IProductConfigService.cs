@@ -1,4 +1,5 @@
-﻿using TechGear.ProductService.Models;
+﻿using TechGear.ProductService.DTOs;
+using TechGear.ProductService.Models;
 
 namespace TechGear.ProductService.Interfaces
 {
@@ -6,6 +7,6 @@ namespace TechGear.ProductService.Interfaces
     {
         Task<IEnumerable<ProductConfiguration>> GetProductConfigurationsAsync();
         Task<IEnumerable<ProductConfiguration>> GetProductConfigurationsByProductItemIdAsync(int productItemId);
-        Task<bool> AddProductConfigAsync(ProductConfiguration productConfiguration);
+        Task<bool> AddProductConfigsAsync(List<ProductConfigDto> productConfigurations);
     }
 }

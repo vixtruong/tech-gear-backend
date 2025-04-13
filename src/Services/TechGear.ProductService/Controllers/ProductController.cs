@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TechGear.ProductService.DTOs;
 using TechGear.ProductService.Interfaces;
 using TechGear.ProductService.Models;
 
@@ -36,7 +37,7 @@ namespace TechGear.ProductService.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddProduct([FromBody] Product product)
+        public async Task<IActionResult> AddProduct([FromBody] ProductDto product)
         {
             var newProduct = await _productService.AddProductAsync(product);
 

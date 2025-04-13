@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TechGear.ProductService.Data;
+using TechGear.ProductService.DTOs;
 using TechGear.ProductService.Interfaces;
 using TechGear.ProductService.Models;
 
@@ -19,16 +20,31 @@ namespace TechGear.ProductService.Services
             return await _context.Products.FirstOrDefaultAsync(p => p!.Id == productId);
         }
 
-        public async Task<Product?> AddProductAsync(Product product)
+        public async Task<Product?> AddProductAsync(ProductDto productDto)
         {
-            if (await _context.Products.AnyAsync(p => p.Name == product.Name)) return null;
+            if (await _context.Products.AnyAsync(p => p.Name == productDto.Name))
+                return null;
 
-            _context.Products.Add(product);
+            var entity = new Product
+            {
+                CategoryId = productDto.CategoryId,
+                BrandId = productDto.BrandId,
+                Name = productDto.Name,
+                Description = productDto.Description,
+                ProductImage = productDto.ProductImage,
+                CreateAt = productDto.CreateAt,
+                Available = productDto.Available,
+                Price = productDto.Price
+            };
+
+            _context.Products.Add(entity);
             await _context.SaveChangesAsync();
-            return product;
+
+            return entity;
         }
 
-        public async Task<bool> UpdateProductAsync(Product product)
+
+        public async Task<bool> UpdateProductAsync(ProductDto product)
         {
             var existProduct = await _context.Products.FindAsync(product.Id);
 

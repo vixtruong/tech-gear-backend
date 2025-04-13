@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TechGear.ProductService.DTOs;
 using TechGear.ProductService.Interfaces;
 using TechGear.ProductService.Models;
 
@@ -56,7 +57,7 @@ namespace TechGear.ProductService.Controllers
         }
 
         [HttpPost("add")]
-        public async Task<IActionResult> AddVariationOption(VariationOption option)
+        public async Task<IActionResult> AddVariationOption([FromBody] VariationOptionDto option)
         {
             var newOption = await _variationOptionService.AddVariationOptionAsync(option);
             if (newOption == null)
