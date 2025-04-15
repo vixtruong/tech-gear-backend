@@ -18,6 +18,14 @@ namespace TechGear.OrderService.Controllers
            return Ok(cartItems);
        }
 
+       [HttpPost("by-ids")]
+       public async Task<IActionResult> GetCartItemsByIds([FromBody] List<int> ids)
+       {
+           var cartItems = await _cartService.GetAllCartItemsByIds(ids);
+
+           return Ok(cartItems);
+       }
+
        [HttpPost("add")]
        public async Task<IActionResult> AddToCart([FromBody] ActionCartItemDto cartItem)
        {
@@ -31,7 +39,20 @@ namespace TechGear.OrderService.Controllers
            return Ok(new { message = "Item added to cart successfully." });
        }
 
-       [HttpDelete("delete")]
+       [HttpPost("add-list")]
+       public async Task<IActionResult> AddToCart([FromBody] CartListDto cartListItem)
+       {
+           var added = await _cartService.AddListToCartAsync(cartListItem.UserId, cartListItem.ProductItemIds!);
+
+           if (!added)
+           {
+               return BadRequest(new { message = "Failed." });
+           }
+
+           return Ok(new { message = "Items added to cart successfully." });
+       }
+
+        [HttpDelete("delete")]
        public async Task<IActionResult> DeleteCartItem([FromBody] ActionCartItemDto cartItem)
        {
            var deleted = await _cartService.DeleteAsync(cartItem.UserId, cartItem.ProductItemId);

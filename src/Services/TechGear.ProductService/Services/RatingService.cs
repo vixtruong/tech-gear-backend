@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TechGear.ProductService.Data;
+using TechGear.ProductService.DTOs;
 using TechGear.ProductService.Interfaces;
 using TechGear.ProductService.Models;
 
@@ -13,6 +14,30 @@ namespace TechGear.ProductService.Services
         public async Task<IEnumerable<Rating>> GetRatingsByProductIdAsync(int productId)
         {
             return await _context.Ratings.Where(r => r.ProductId == productId).ToListAsync();
+        }
+
+        public async Task<AverageRatingDto> GetAverageRatingForProductIdAsync(int productId)
+        {
+            var ratings = await _context.Ratings
+                .Where(r => r.ProductId == productId)
+                .ToListAsync();
+
+            if (ratings.Count == 0)
+            {
+                return new AverageRatingDto
+                {
+                    ProductId = productId,
+                    RatingCount = 0,
+                    AverageRating = 0
+                };
+            }
+
+            return new AverageRatingDto
+            {
+                ProductId = productId,
+                AverageRating = ratings.Average(r => r.Star),
+                RatingCount = ratings.Count
+            };
         }
 
         public async Task<bool> AddRatingAsync(Rating rating)

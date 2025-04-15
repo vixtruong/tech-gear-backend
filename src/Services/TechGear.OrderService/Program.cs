@@ -51,6 +51,7 @@ namespace TechGear.OrderService
             builder.Services.AddControllers();
 
             builder.Services.AddScoped<ICartService, CartService>();
+            builder.Services.AddScoped<IStatisticService, StatisticService>();
 
             builder.Services.AddHttpClient("ApiGatewayClient", client =>
             {

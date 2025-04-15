@@ -10,7 +10,7 @@
           "Port": 5002
         }
       ],
-      "UpstreamPathTemplate": "/api/auth/{everything}",
+      "UpstreamPathTemplate": "/api/v1/auth/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
     },
 
@@ -24,7 +24,7 @@
           "Port": 5003
         }
       ],
-      "UpstreamPathTemplate": "/api/chat/{everything}",
+      "UpstreamPathTemplate": "/api/v1/chats/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
     },
 
@@ -38,7 +38,7 @@
           "Port": 5006
         }
       ],
-      "UpstreamPathTemplate": "/api/user/{everything}",
+      "UpstreamPathTemplate": "/api/v1/users/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
     },
 
@@ -52,7 +52,31 @@
           "Port": 5004
         }
       ],
-      "UpstreamPathTemplate": "/api/order/{everything}",
+      "UpstreamPathTemplate": "/api/v1/orders/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/cart/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5004
+        }
+      ],
+      "UpstreamPathTemplate": "/api/v1/carts/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/statistic/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5004
+        }
+      ],
+      "UpstreamPathTemplate": "/api/v1/statistics/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
     },
 
@@ -66,7 +90,7 @@
           "Port": 5005
         }
       ],
-      "UpstreamPathTemplate": "/api/product/{everything}",
+      "UpstreamPathTemplate": "/api/v1/products/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
     },
     {
@@ -78,7 +102,7 @@
           "Port": 5005
         }
       ],
-      "UpstreamPathTemplate": "/api/brand/{everything}",
+      "UpstreamPathTemplate": "/api/v1/brands/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
     },
     {
@@ -90,7 +114,7 @@
           "Port": 5005
         }
       ],
-      "UpstreamPathTemplate": "/api/category/{everything}",
+      "UpstreamPathTemplate": "/api/v1/categories/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
     },
     {
@@ -102,7 +126,7 @@
           "Port": 5005
         }
       ],
-      "UpstreamPathTemplate": "/api/productitem/{everything}",
+      "UpstreamPathTemplate": "/api/v1/productitems/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
     },
     {
@@ -114,7 +138,7 @@
           "Port": 5005
         }
       ],
-      "UpstreamPathTemplate": "/api/rating/{everything}",
+      "UpstreamPathTemplate": "/api/v1/ratings/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
     },
     {
@@ -126,7 +150,7 @@
           "Port": 5005
         }
       ],
-      "UpstreamPathTemplate": "/api/variation/{everything}",
+      "UpstreamPathTemplate": "/api/v1/variations/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
     },
     {
@@ -138,7 +162,7 @@
           "Port": 5005
         }
       ],
-      "UpstreamPathTemplate": "/api/variationoption/{everything}",
+      "UpstreamPathTemplate": "/api/v1/variationoptions/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
     },
     {
@@ -150,7 +174,7 @@
           "Port": 5005
         }
       ],
-      "UpstreamPathTemplate": "/api/productconfig/{everything}",
+      "UpstreamPathTemplate": "/api/v1/productconfigs/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
     }
   ],

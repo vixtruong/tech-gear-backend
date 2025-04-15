@@ -24,6 +24,7 @@ namespace TechGear.ProductService.Services
                 .Where(p => ids.Contains(p.Id))
                 .Select(p => new ProductItemInfoDto
                 {
+                    ProductItemId = p.Id,
                     ProductName = p.Product.Name,
                     Sku = p.Sku,
                     ImageUrl = p.Product.ProductImage,

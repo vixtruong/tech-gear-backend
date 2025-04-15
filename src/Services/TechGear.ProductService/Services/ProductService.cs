@@ -6,13 +6,64 @@ using TechGear.ProductService.Models;
 
 namespace TechGear.ProductService.Services
 {
-    public class ProductService(TechGearProductServiceContext context) : IProductService
+    public class ProductService(TechGearProductServiceContext context, IHttpClientFactory httpClientFactory) : IProductService
     {
         private readonly TechGearProductServiceContext _context = context;
+        private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
 
         public async Task<IEnumerable<Product?>> GetAllProductsAsync()
         {
             return await _context.Products.ToListAsync();
+        }
+
+        public async Task<IEnumerable<Product?>> GetPromotionProductsAsync()
+        {
+            return await _context.Products
+                .Include(p => p.ProductItems.Where(pi => pi.Discount > 0))
+                .Where(p => p.ProductItems.Any(pi => pi.Discount > 0))
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Product?>> GetNewProductsAsync()
+        {
+            var thresholdDate = DateTime.Now.AddDays(-14);
+
+            return await _context.Products
+                .Where(p => p.CreateAt >= thresholdDate)
+                .ToListAsync();
+        }
+
+
+        public async Task<IEnumerable<Product?>> GetBestSellerProductsAsync()
+        {
+            var client = _httpClientFactory.CreateClient("ApiGatewayClient");
+
+            var response = await client.GetAsync("api/v1/statistics/best-seller-product-item-ids");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return new List<Product?>();
+            }
+
+            var productItemIds = await response.Content.ReadFromJsonAsync<List<int>>();
+
+            if (productItemIds == null)
+            {
+                return new List<Product?>();
+            }
+
+            var productItems = await _context.ProductItems
+                .Include(pi => pi.Product)
+                .Where(pi => productItemIds.Contains(pi.Id))
+                .ToListAsync();
+
+            var orderedProducts = productItemIds
+                .Select(id => productItems.FirstOrDefault(pi => pi.Id == id)?.Product)
+                .Where(p => p != null)
+                .Distinct() 
+                .ToList();
+
+            return orderedProducts;
         }
 
         public async Task<Product?> GetProductByIdAsync(int productId)
@@ -32,9 +83,9 @@ namespace TechGear.ProductService.Services
                 Name = productDto.Name,
                 Description = productDto.Description,
                 ProductImage = productDto.ProductImage,
-                CreateAt = productDto.CreateAt,
+                CreateAt = DateTime.Now,
                 Available = productDto.Available,
-                Price = productDto.Price
+                Price = productDto.Price,
             };
 
             _context.Products.Add(entity);

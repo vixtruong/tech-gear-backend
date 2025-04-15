@@ -21,6 +21,8 @@ public partial class ProductItem
 
     public DateTime CreateAt { get; set; }
 
+    public int Discount { get; set; }
+
     public virtual Product Product { get; set; } = null!;
 
     public virtual ICollection<ProductConfiguration> ProductConfigurations { get; set; } = new List<ProductConfiguration>();

@@ -32,7 +32,7 @@ namespace TechGear.AuthService.Controllers
                 DeliveryAddress = user.DeliveryAddress
             };
 
-            var response = await client.PostAsJsonAsync("api/user/create", userDto);
+            var response = await client.PostAsJsonAsync("api/v1/users/create", userDto);
 
             if (!response.IsSuccessStatusCode)
             {

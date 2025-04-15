@@ -20,7 +20,7 @@ public partial class TechGearProductServiceContext : DbContext
 
     public virtual DbSet<Category> Categories { get; set; }
 
-    public virtual DbSet<Product?> Products { get; set; }
+    public virtual DbSet<Product> Products { get; set; }
 
     public virtual DbSet<ProductConfiguration> ProductConfigurations { get; set; }
 

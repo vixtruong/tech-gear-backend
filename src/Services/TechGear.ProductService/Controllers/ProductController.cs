@@ -7,19 +7,38 @@ namespace TechGear.ProductService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductController : ControllerBase
+    public class ProductController(IProductService productService) : ControllerBase
     {
-        private readonly IProductService _productService;
-
-        public ProductController(IProductService productService)
-        {
-            _productService = productService;
-        }
+        private readonly IProductService _productService = productService;
 
         [HttpGet("all")]
         public async Task<IActionResult> GetAllProducts()
         {
             var products = await _productService.GetAllProductsAsync();
+
+            return Ok(products);
+        }
+
+        [HttpGet("best-sellers")]
+        public async Task<IActionResult> GetBestSellerProducts()
+        {
+            var products = await _productService.GetBestSellerProductsAsync();
+
+            return Ok(products);
+        }
+
+        [HttpGet("new")]
+        public async Task<IActionResult> GetNewProducts()
+        {
+            var products = await _productService.GetNewProductsAsync();
+
+            return Ok(products);
+        }
+
+        [HttpGet("promotions")]
+        public async Task<IActionResult> GetPromotionProducts()
+        {
+            var products = await _productService.GetPromotionProductsAsync();
 
             return Ok(products);
         }

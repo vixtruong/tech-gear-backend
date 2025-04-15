@@ -62,6 +62,11 @@ namespace TechGear.ProductService
             builder.Services.AddScoped<IProductConfigService, ProductConfigService>();
             builder.Services.AddScoped<IRatingService, RatingService>();
 
+            builder.Services.AddHttpClient("ApiGatewayClient", client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:5001");
+            });
+
             var app = builder.Build();
 
             app.UseHttpsRedirection();
