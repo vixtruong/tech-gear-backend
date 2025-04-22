@@ -59,7 +59,6 @@ namespace TechGear.ProductService
             builder.Services.AddScoped<IProductConfigService, ProductConfigService>();
             builder.Services.AddScoped<IVariationService, VariationService>();
             builder.Services.AddScoped<IVariationOptionService, VariationOptionService>();
-            builder.Services.AddScoped<IProductConfigService, ProductConfigService>();
             builder.Services.AddScoped<IRatingService, RatingService>();
 
             builder.Services.AddHttpClient("ApiGatewayClient", client =>

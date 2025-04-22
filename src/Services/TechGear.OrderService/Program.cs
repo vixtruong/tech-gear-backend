@@ -50,8 +50,10 @@ namespace TechGear.OrderService
 
             builder.Services.AddControllers();
 
+            builder.Services.AddScoped<IOrderService, Services.OrderService>();
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<IStatisticService, StatisticService>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
 
             builder.Services.AddHttpClient("ApiGatewayClient", client =>
             {

@@ -3,7 +3,6 @@ using TechGear.OrderService.Data;
 using TechGear.OrderService.DTOs;
 using TechGear.OrderService.Interfaces;
 using TechGear.OrderService.Models;
-using TechGear.ProductService.DTOs;
 
 namespace TechGear.OrderService.Services
 {
@@ -18,63 +17,42 @@ namespace TechGear.OrderService.Services
                 .Where(c => c.Cart.UserId == userId)
                 .ToListAsync();
 
-            var productItemIds = cartItems.Select(c => c.ProductItemId).ToList();
 
-            var client = _httpClientFactory.CreateClient("ApiGatewayClient");
-
-            var response = await client.PostAsJsonAsync("api/v1/ProductItems/get-by-ids", productItemIds);
-
-            if (!response.IsSuccessStatusCode)
+            var results = cartItems.Select(ci => new CartItemDto
             {
-                return null;
-            }
-
-            var productItemsInfo = await response.Content.ReadFromJsonAsync<List<ProductItemInfoDto>>();
-
-            var results = cartItems.Select(ci =>
-            {
-                var info = productItemsInfo?.FirstOrDefault(p => p.ProductItemId == ci.ProductItemId);
-
-                return new CartItemDto
-                {
-                    ProductItemId = ci.ProductItemId,
-                    Quantity = ci.Quantity,
-                    ProductName = info?.ProductName ?? "",
-                    Sku = info?.Sku ?? "",
-                    ImageUrl = info?.ImageUrl ?? "",
-                    Price = info?.Price ?? 0
-                };
+                ProductItemId = ci.ProductItemId,
+                Quantity = ci.Quantity,
             });
 
             return results;
         }
 
-        public async Task<IEnumerable<CartItemDto>?> GetAllCartItemsByIds(List<int> productItemIds)
-        {
-            var client = _httpClientFactory.CreateClient("ApiGatewayClient");
+        //public async Task<IEnumerable<CartItemDto>?> GetAllCartItemsByIds(List<int> productItemIds)
+        //{
+        //    var client = _httpClientFactory.CreateClient("ApiGatewayClient");
 
-            var response = await client.PostAsJsonAsync("api/v1/ProductItems/get-by-ids", productItemIds);
+        //    var response = await client.PostAsJsonAsync("api/v1/ProductItems/by-ids", productItemIds);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                return null;
-            }
+        //    if (!response.IsSuccessStatusCode)
+        //    {
+        //        return null;
+        //    }
 
-            var productItemsInfo = await response.Content.ReadFromJsonAsync<List<ProductItemInfoDto>>();
+        //    var productItemsInfo = await response.Content.ReadFromJsonAsync<List<ProductItemInfoDto>>();
 
-            var result = productItemsInfo?.Select(p => new CartItemDto
-            {
-                ProductItemId = p.ProductItemId,
-                Sku = p.Sku,
-                ProductName = p.ProductName,
-                ImageUrl = p.ImageUrl,
-                Price = p.Price,
-            });
+        //    var result = productItemsInfo?.Select(p => new CartItemDto
+        //    {
+        //        ProductItemId = p.ProductItemId,
+        //        Sku = p.Sku,
+        //        ProductName = p.ProductName,
+        //        ImageUrl = p.ImageUrl,
+        //        Price = p.Price,
+        //    });
 
-            return result;
-        }
+        //    return result;
+        //}
 
-        public async Task<bool> AddListToCartAsync(int userId, List<int>? productItemIds)
+        public async Task<bool> UpdateListToCartAsync(int userId, List<CartItemDto>? cartItems)
         {
             var cart = await _context.Carts
                 .Include(c => c.CartItems)
@@ -91,14 +69,14 @@ namespace TechGear.OrderService.Services
                     .FirstOrDefaultAsync(c => c.UserId == userId);
             }
 
-            foreach (var productItemId in productItemIds!)
+            foreach (var item in cartItems!)
             {
                 var existingItem = cart?.CartItems
-                    .FirstOrDefault(ci => ci.ProductItemId == productItemId);
+                    .FirstOrDefault(ci => ci.ProductItemId == item.ProductItemId);
 
                 if (existingItem != null)
                 {
-                    existingItem.Quantity += 1;
+                    existingItem.Quantity += item.Quantity ?? 1;
                     _context.CartItems.Update(existingItem);
                 }
                 else
@@ -106,8 +84,8 @@ namespace TechGear.OrderService.Services
                     var newCartItem = new CartItem
                     {
                         CartId = cart!.Id,
-                        ProductItemId = productItemId,
-                        Quantity = 1
+                        ProductItemId = item.ProductItemId,
+                        Quantity = item.Quantity ?? 1,
                     };
                     _context.CartItems.Add(newCartItem);
                 }
@@ -117,8 +95,7 @@ namespace TechGear.OrderService.Services
             return true;
         }
 
-
-        public async Task<bool> AddToCartAsync(int userId, int productItemId)
+        public async Task<bool> AddToCartAsync(int userId, int productItemId, int? quantity)
         {
             var cart = await _context.Carts
                 .Include(c => c.CartItems)
@@ -134,7 +111,7 @@ namespace TechGear.OrderService.Services
                 {
                     CartId = cart.Id,
                     ProductItemId = productItemId,
-                    Quantity = 1
+                    Quantity = quantity ?? 1,
                 };
                 _context.CartItems.Add(newCartItem);
             }

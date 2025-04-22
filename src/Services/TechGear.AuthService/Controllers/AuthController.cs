@@ -29,14 +29,16 @@ namespace TechGear.AuthService.Controllers
                 Email = user.Email,
                 FullName = user.FullName,
                 PhoneNumber = user.PhoneNumber,
-                DeliveryAddress = user.DeliveryAddress
+                Address = user.Address,
             };
+
+            Console.WriteLine(userDto.Email + "-" + userDto.FullName + "-" + userDto.PhoneNumber + "-" + userDto.Address);
 
             var response = await client.PostAsJsonAsync("api/v1/users/create", userDto);
 
             if (!response.IsSuccessStatusCode)
             {
-                return StatusCode((int)response.StatusCode, new { message = "User profile creation failed." });
+                return StatusCode((int)response.StatusCode, new { message = "User already exist." });
             }
 
             var createdUser = await response.Content.ReadFromJsonAsync<UserDto>();
@@ -54,11 +56,11 @@ namespace TechGear.AuthService.Controllers
                 Role = user.Role
             };
 
-            var success = await _authService.RegisterAsync(newAccount, user.RawPassword);
+            var success = await _authService.RegisterAsync(newAccount, user.RawPassword ?? createdUser.PhoneNumber);
 
             if (!success) return BadRequest(new { message = "An account with this email already exists." });
 
-            return Ok(new { message = "Registration successful." });
+            return Ok(new { userId = newAccount.UserId, userAddressId = createdUser.UserAddressId });
         }
 
         [HttpPost("login")]

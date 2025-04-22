@@ -28,5 +28,43 @@ namespace TechGear.UserService.Controllers
             return Ok(result);
         }
 
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetUserById(int userId, [FromQuery] int? userAddressId)
+        {
+            var user = await _userService.GetUserByIdAsync(userId, userAddressId);
+
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found." });
+            }
+
+            return Ok(user);
+        }
+
+        [HttpGet("{userId}/points")]
+        public async Task<IActionResult> UserPoints(int userId)
+        {
+            var points = await _userService.GetPointAsync(userId);
+
+            if (points == null)
+            {
+                return NotFound(new { message = "User not found." });
+            }
+
+            return Ok(points);
+        }
+
+        [HttpPut("{userId}/points")]
+        public async Task<IActionResult> UpdateUserPoints(int userId, [FromBody] int usedPoint)
+        {
+            var success = await _userService.UpdatePointAsync(userId, usedPoint);
+
+            if (!success)
+            {
+                return BadRequest(new { message = "Failed to update points." });
+            }
+
+            return Ok(new { message = "Points updated successfully." });
+        }
     }
 }

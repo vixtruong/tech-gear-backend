@@ -10,7 +10,7 @@ namespace TechGear.OrderService.Controllers
     {
        private readonly ICartService _cartService = cartService;
 
-       [HttpGet("by-userId/{userId}")]
+       [HttpGet("{userId}")]
        public async Task<IActionResult> GetCartItemsByUserId(int userId)
        {
            var cartItems = await _cartService.GetAllCartItemsByUserId(userId);
@@ -18,18 +18,11 @@ namespace TechGear.OrderService.Controllers
            return Ok(cartItems);
        }
 
-       [HttpPost("by-ids")]
-       public async Task<IActionResult> GetCartItemsByIds([FromBody] List<int> ids)
-       {
-           var cartItems = await _cartService.GetAllCartItemsByIds(ids);
-
-           return Ok(cartItems);
-       }
 
        [HttpPost("add")]
        public async Task<IActionResult> AddToCart([FromBody] ActionCartItemDto cartItem)
        {
-           var added = await _cartService.AddToCartAsync(cartItem.UserId, cartItem.ProductItemId);
+           var added = await _cartService.AddToCartAsync(cartItem.UserId, cartItem.ProductItemId, cartItem.Quantity);
 
            if (!added)
            {
@@ -39,10 +32,10 @@ namespace TechGear.OrderService.Controllers
            return Ok(new { message = "Item added to cart successfully." });
        }
 
-       [HttpPost("add-list")]
-       public async Task<IActionResult> AddToCart([FromBody] CartListDto cartListItem)
+       [HttpPost("update")]
+       public async Task<IActionResult> UpdateListToCart([FromBody] CartListDto cartListItem)
        {
-           var added = await _cartService.AddListToCartAsync(cartListItem.UserId, cartListItem.ProductItemIds!);
+           var added = await _cartService.UpdateListToCartAsync(cartListItem.UserId, cartListItem.CartItems!);
 
            if (!added)
            {
@@ -52,8 +45,21 @@ namespace TechGear.OrderService.Controllers
            return Ok(new { message = "Items added to cart successfully." });
        }
 
-        [HttpDelete("delete")]
-       public async Task<IActionResult> DeleteCartItem([FromBody] ActionCartItemDto cartItem)
+        [HttpPut("update-quantity")]
+        public async Task<IActionResult> UpdateCartItem([FromBody] ActionCartItemDto cartItem)
+        {
+            var updated = await _cartService.UpdateAsync(cartItem.UserId, cartItem.ProductItemId, cartItem.Quantity ?? 1);
+
+            if (!updated)
+            {
+                return NotFound(new { message = "This product item in user cart not found" });
+            }
+
+            return Ok(new { message = "Item updated to cart successfully." });
+        }
+
+       [HttpDelete("delete/{productItemId}")]
+       public async Task<IActionResult> DeleteCartItem(int productItemId,[FromBody] ActionCartItemDto cartItem)
        {
            var deleted = await _cartService.DeleteAsync(cartItem.UserId, cartItem.ProductItemId);
 

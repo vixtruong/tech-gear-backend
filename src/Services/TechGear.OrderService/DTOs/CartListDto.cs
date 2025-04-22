@@ -3,6 +3,6 @@
     public class CartListDto
     {
         public int UserId { get; set; }
-        public List<int>? ProductItemIds { get; set; }
+        public List<CartItemDto>? CartItems { get; set; }
     }
 }

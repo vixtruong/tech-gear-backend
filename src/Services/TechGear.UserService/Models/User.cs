@@ -13,7 +13,11 @@ public partial class User
 
     public string? PhoneNumber { get; set; }
 
-    public string? DeliveryAddress { get; set; }
+    public int LoyaltyPoint { get; set; }
 
     public virtual ICollection<Loyalty> Loyalties { get; set; } = new List<Loyalty>();
+
+    public virtual ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
+
+    public virtual ICollection<UserAddress> UserAddresses { get; set; } = new List<UserAddress>();
 }

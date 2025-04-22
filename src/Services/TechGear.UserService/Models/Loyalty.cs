@@ -13,5 +13,7 @@ public partial class Loyalty
 
     public int Point { get; set; }
 
+    public DateTime CreatedAt { get; set; }
+
     public virtual User User { get; set; } = null!;
 }

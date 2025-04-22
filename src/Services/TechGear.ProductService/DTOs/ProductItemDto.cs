@@ -7,6 +7,7 @@
         public int QtyInStock { get; set; }
         public string ProductImage { get; set; } = string.Empty;
         public int Price { get; set; }
+        public int? Discount { get; set; }
         public bool Available { get; set; }
         public DateTime CreateAt { get; set; }
         public int ProductId { get; set; }

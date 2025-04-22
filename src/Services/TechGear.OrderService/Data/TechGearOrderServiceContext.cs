@@ -28,6 +28,8 @@ public partial class TechGearOrderServiceContext : DbContext
 
     public virtual DbSet<Payment> Payments { get; set; }
 
+    public virtual DbSet<Delivery> Deliveries { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Cart>(entity =>
@@ -84,9 +86,9 @@ public partial class TechGearOrderServiceContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__Payments__3214EC0779179019");
 
+            entity.Property(e => e.Amount);
             entity.Property(e => e.Method).HasMaxLength(50);
             entity.Property(e => e.PaidAt)
-                .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
 
             entity.HasOne(d => d.Order).WithMany(p => p.Payments)
@@ -94,6 +96,29 @@ public partial class TechGearOrderServiceContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Payments__OrderI__32E0915F");
         });
+
+        modelBuilder.Entity<Delivery>(entity =>
+        {
+            entity.ToTable("Deliveries");
+
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Status)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.Property(e => e.Note)
+                .HasMaxLength(255);
+
+            entity.Property(e => e.DeliveryDate)
+                .HasColumnType("datetime");
+
+            entity.HasOne(e => e.Order)
+                .WithOne(o => o.Delivery) // cần có navigation property ở Order
+                .HasForeignKey<Delivery>(e => e.OrderId)
+                .IsRequired();
+        });
+
 
         OnModelCreatingPartial(modelBuilder);
     }

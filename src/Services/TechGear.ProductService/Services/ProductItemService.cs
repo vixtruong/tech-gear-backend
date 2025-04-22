@@ -28,7 +28,8 @@ namespace TechGear.ProductService.Services
                     ProductName = p.Product.Name,
                     Sku = p.Sku,
                     ImageUrl = p.Product.ProductImage,
-                    Price = p.Price
+                    Price = p.Price,
+                    Discount = p.Discount,
                 })
                 .ToListAsync();
 
@@ -38,6 +39,14 @@ namespace TechGear.ProductService.Services
         public async Task<ProductItem?> GetProductItemByIdAsync(int id)
         {
             return await _context.ProductItems.FirstOrDefaultAsync(pi => pi.Id == id);
+        }
+
+        public async Task<List<int>?> GetPriceAsync(List<int> ids)
+        {
+            return await _context.ProductItems
+                .Where(pi => ids.Contains(pi.Id))
+                .Select(pi => pi.Price)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<ProductItem?>> GetProductItemsByProductIdAsync(int productId)
@@ -58,7 +67,8 @@ namespace TechGear.ProductService.Services
                 Price = productItem.Price,
                 Available = productItem.Available,
                 CreateAt = productItem.CreateAt,
-                ProductId = productItem.ProductId
+                ProductId = productItem.ProductId,
+                Discount = productItem.Discount ?? 0,
             };
 
             _context.ProductItems.Add(entity);
@@ -79,6 +89,7 @@ namespace TechGear.ProductService.Services
             existItem.ProductId = productItem.ProductId;
             existItem.ProductImage = productItem.ProductImage;
             existItem.QtyInStock = productItem.QtyInStock;
+            existItem.Discount = productItem.Discount ?? existItem.Discount;
 
             await _context.SaveChangesAsync();
             return true;

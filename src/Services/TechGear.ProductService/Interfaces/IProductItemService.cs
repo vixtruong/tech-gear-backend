@@ -8,6 +8,7 @@ namespace TechGear.ProductService.Interfaces
         Task<IEnumerable<ProductItem?>> GetAllProductItemsAsync();
         Task<IEnumerable<ProductItemInfoDto?>> GetProductItemsByIdsAsync(List<int>? ids);
         Task<ProductItem?> GetProductItemByIdAsync(int id);
+        Task<List<int>?> GetPriceAsync(List<int> ids);
         Task<IEnumerable<ProductItem?>> GetProductItemsByProductIdAsync(int productId);
         Task<ProductItem?> AddProductItemAsync(ProductItemDto product);
         Task<bool> UpdateProductItemAsync(ProductItemDto product);

@@ -1,6 +1,6 @@
-﻿namespace TechGear.AuthService.DTOs
+﻿namespace TechGear.OrderService.DTOs
 {
-    public class UserDto
+    public class UserInfoResponse
     {
         public int Id { get; set; }
 
@@ -10,8 +10,10 @@
 
         public string FullName { get; set; } = null!;
 
-        public string PhoneNumber { get; set; } = null!;
+        public string? PhoneNumber { get; set; }
 
-        public string? Address { get; set; } = null!;
+        public int? Point { get; set; }
+
+        public string? Address { get; set; }
     }
 }

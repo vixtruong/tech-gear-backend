@@ -24,7 +24,7 @@ namespace TechGear.ProductService.Controllers
             return Ok(productItems);
         }
 
-        [HttpPost("get-by-ids")]
+        [HttpPost("by-ids")]
         public async Task<IActionResult> GetProductItemsInfo([FromBody] List<int>? ids)
         {
             if (ids == null || !ids.Any())
@@ -53,6 +53,17 @@ namespace TechGear.ProductService.Controllers
             }
 
             return Ok(productItem);
+        }
+
+        [HttpPost("price")]
+        public async Task<IActionResult> GetPrice([FromBody] List<int>? ids)
+        {
+            if (ids == null || !ids.Any())
+                return BadRequest("List ID invalid.");
+
+            var prices = await _productItemService.GetPriceAsync(ids);
+
+            return Ok(prices);
         }
 
         [HttpPost("add")]

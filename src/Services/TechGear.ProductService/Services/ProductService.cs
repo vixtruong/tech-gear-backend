@@ -34,7 +34,7 @@ namespace TechGear.ProductService.Services
         }
 
 
-        public async Task<IEnumerable<Product?>> GetBestSellerProductsAsync()
+        public async Task<IEnumerable<ProductDto?>> GetBestSellerProductsAsync()
         {
             var client = _httpClientFactory.CreateClient("ApiGatewayClient");
 
@@ -42,14 +42,14 @@ namespace TechGear.ProductService.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                return new List<Product?>();
+                return new List<ProductDto?>();
             }
 
             var productItemIds = await response.Content.ReadFromJsonAsync<List<int>>();
 
             if (productItemIds == null)
             {
-                return new List<Product?>();
+                return new List<ProductDto?>();
             }
 
             var productItems = await _context.ProductItems
@@ -63,7 +63,22 @@ namespace TechGear.ProductService.Services
                 .Distinct() 
                 .ToList();
 
-            return orderedProducts;
+            var result = orderedProducts
+                .Select(p => new ProductDto
+                {
+                    Id = p!.Id,
+                    Name = p.Name,
+                    BrandId = p.BrandId,
+                    CategoryId = p.CategoryId,
+                    Description = p.Description,
+                    ProductImage = p.ProductImage,
+                    CreateAt = p.CreateAt,
+                    Available = p.Available,
+                    Price = p.Price
+                })
+                .ToList();
+
+            return result;
         }
 
         public async Task<Product?> GetProductByIdAsync(int productId)

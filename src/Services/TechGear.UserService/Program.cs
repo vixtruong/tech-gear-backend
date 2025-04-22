@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using TechGear.UserService.Data;
 using TechGear.UserService.Interfaces;
+using TechGear.UserService.Services;
 
 namespace TechGear.UserService
 {
@@ -51,6 +52,8 @@ namespace TechGear.UserService
             builder.Services.AddControllers();
 
             builder.Services.AddScoped<IUserService, Services.UserService>();
+            builder.Services.AddScoped<IFavoriteService, FavoriteService>();
+            builder.Services.AddScoped<ILoyaltyService, LoyaltyService>();
 
             var app = builder.Build();
 
