@@ -99,7 +99,7 @@ namespace TechGear.OrderService.Services
                         .Select(c => c.Value)
                         .FirstOrDefaultAsync();
 
-                    paymentAmount -= (order.TotalAmount * couponValue)/100;
+                    paymentAmount -= couponValue;
                 }
 
                 var client = _httpClientFactory.CreateClient("ApiGatewayClient");
@@ -141,7 +141,7 @@ namespace TechGear.OrderService.Services
                 await _context.Deliveries.AddAsync(newShipping);
 
                 var productItemIds = order.OrderItems!.Select(oi => oi.ProductItemId).ToList();
-                var productItemResponse = await client.PostAsJsonAsync("api/v1/productitems/by-ids", productItemIds);
+                var productItemResponse = await client.PostAsJsonAsync("api/v1/productItems/by-ids", productItemIds);
                 if (!productItemResponse.IsSuccessStatusCode)
                     throw new Exception("Can not get information.");
 
@@ -179,7 +179,7 @@ namespace TechGear.OrderService.Services
                     Note = order.Note,
                     Items = orderItemEmailDtos,
                     UsedPoints = newOrder.Point,
-                    DiscountValue = (order.TotalAmount * couponValue) / 100
+                    DiscountValue = couponValue
                 };
 
                 await _context.SaveChangesAsync();

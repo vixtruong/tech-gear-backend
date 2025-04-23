@@ -9,7 +9,6 @@ namespace TechGear.OrderService.Services
     public class CartService(TechGearOrderServiceContext context, IHttpClientFactory httpClientFactory) : ICartService
     {
         private readonly TechGearOrderServiceContext _context = context;
-        private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
 
         public async Task<IEnumerable<CartItemDto>?> GetAllCartItemsByUserId(int userId)
         {
@@ -120,7 +119,7 @@ namespace TechGear.OrderService.Services
                 var existingItem = cart.CartItems.FirstOrDefault(ci => ci.ProductItemId == productItemId);
                 if (existingItem != null)
                 {
-                    existingItem.Quantity += 1;
+                    existingItem.Quantity += quantity ?? 1;
                     _context.CartItems.Update(existingItem);
                 }
                 else
@@ -129,7 +128,7 @@ namespace TechGear.OrderService.Services
                     {
                         CartId = cart.Id,
                         ProductItemId = productItemId,
-                        Quantity = 1
+                        Quantity = quantity ?? 1,
                     };
                     _context.CartItems.Add(newCartItem);
                 }

@@ -13,5 +13,9 @@ public partial class Coupon
 
     public int UsageLimit { get; set; }
 
+    public DateTime? ExpirationDate { get; set; }
+
+    public int MinimumOrderAmount { get; set; }
+
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 }

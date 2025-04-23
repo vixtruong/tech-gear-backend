@@ -89,6 +89,7 @@ namespace TechGear.UserService.Services
                 Email = user.Email,
                 FullName = user.FullName,
                 PhoneNumber = user.PhoneNumber,
+                Point = user.LoyaltyPoint,
                 Address = user.UserAddresses
                     .Where(ua => ua.Id == userAddressId)
                     .Select(ua => ua.Address)

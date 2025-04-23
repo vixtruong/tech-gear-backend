@@ -54,6 +54,7 @@ namespace TechGear.OrderService
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<IStatisticService, StatisticService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
+            builder.Services.AddScoped<ICouponService, CouponService>();
 
             builder.Services.AddHttpClient("ApiGatewayClient", client =>
             {

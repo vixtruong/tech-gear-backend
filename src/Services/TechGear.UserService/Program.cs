@@ -54,6 +54,7 @@ namespace TechGear.UserService
             builder.Services.AddScoped<IUserService, Services.UserService>();
             builder.Services.AddScoped<IFavoriteService, FavoriteService>();
             builder.Services.AddScoped<ILoyaltyService, LoyaltyService>();
+            builder.Services.AddScoped<IUserAddressService, UserAddressService>();
 
             var app = builder.Build();
 

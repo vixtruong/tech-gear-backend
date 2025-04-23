@@ -34,7 +34,7 @@ namespace TechGear.UserService.Controllers
             return BadRequest(new { message = "Product not in favorites." });
         }
 
-        [HttpGet("user/{userId}")]
+        [HttpGet("{userId}")]
         public async Task<IActionResult> GetFavoriteProducts(int userId)
         {
             var result = await _favoriteService.GetFavoriteProductsAsync(userId);

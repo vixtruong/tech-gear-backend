@@ -1,15 +1,13 @@
-﻿namespace TechGear.UserService.Models
+﻿namespace TechGear.UserService.DTOs
 {
-    public class UserAddress
+    public class UserAddressDto
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public int UserId { get; set; }
         public string Address { get; set; } = null!;
         public string RecipientName { get; set; } = null!;
         public string RecipientPhone { get; set; } = null!;
         public bool IsDefault { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow.AddHours(7);
-
-        public virtual User User { get; set; } = null!;
     }
 }

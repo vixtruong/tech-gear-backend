@@ -22,6 +22,7 @@ namespace TechGear.OrderService.Controllers
        [HttpPost("add")]
        public async Task<IActionResult> AddToCart([FromBody] ActionCartItemDto cartItem)
        {
+           Console.WriteLine("quantity" + cartItem.Quantity);
            var added = await _cartService.AddToCartAsync(cartItem.UserId, cartItem.ProductItemId, cartItem.Quantity);
 
            if (!added)

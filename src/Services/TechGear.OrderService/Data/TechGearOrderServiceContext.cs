@@ -57,6 +57,11 @@ public partial class TechGearOrderServiceContext : DbContext
 
             entity.Property(e => e.Code).HasMaxLength(10);
             entity.Property(e => e.UsageLimit).HasDefaultValue(10);
+
+            entity.Property(e => e.ExpirationDate);
+
+            entity.Property(e => e.MinimumOrderAmount)
+                .HasDefaultValue(0);
         });
 
         modelBuilder.Entity<Order>(entity =>
