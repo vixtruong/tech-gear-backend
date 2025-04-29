@@ -35,6 +35,37 @@ namespace TechGear.OrderService.Services
             });
         }
 
+        public async Task<IEnumerable<OrderDto>> GetOrdersByUserIdAsync(int userId)
+        {
+            var orders = await _context.Orders
+                .Where(o => o.UserId == userId)
+                .Include(o => o.OrderItems)
+                .Include(o => o.Payments)
+                .Include(o => o.Delivery)
+                .ToListAsync();
+
+            return orders.Select(o => new OrderDto
+            {
+                Id = o.Id,
+                UserId = o.UserId,
+                UserAddressId = o.UserAddressId,
+                CouponId = o.CouponId,
+                TotalAmount = o.TotalAmount,
+                PaymentAmount = o.Payments.FirstOrDefault()?.Amount,
+                PaymentMethod = o.Payments.FirstOrDefault()?.Method!,
+                CreatedAt = o.CreateAt,
+                DeliveredDate = o.Delivery.DeliveryDate,
+                Status = o.Delivery.Status,
+                OrderItems = o.OrderItems.Select(oi => new OrderItemDto
+                {
+                    Id = oi.Id,
+                    ProductItemId = oi.ProductItemId,
+                    Quantity = oi.Quantity,
+                    Price = oi.Price
+                }).ToList()
+            });
+        }
+
         public async Task<OrderDto?> GetOrderByIdAsync(int orderId)
         {
             var order = await _context.Orders
@@ -62,6 +93,33 @@ namespace TechGear.OrderService.Services
                     Price = oi.Price
                 }).ToList()
             };
+        }
+
+        public async Task<IEnumerable<ProductItemInfoDto>?> GetOrderItemsInfoByOrderId(int orderId)
+        {
+            var order = await _context.Orders
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+
+            if (order == null || order?.OrderItems == null || order.OrderItems.Count == 0)
+            {
+                return null;
+            }
+
+            var productItemIds = order.OrderItems.Select(oi => oi.ProductItemId).ToList();
+
+            var client = _httpClientFactory.CreateClient("ApiGatewayClient");
+
+            var productItemResponse = await client.PostAsJsonAsync("api/v1/productItems/by-ids", productItemIds);
+            if (!productItemResponse.IsSuccessStatusCode)
+                throw new Exception("Can not get information.");
+
+            var productItems = await productItemResponse.Content.ReadFromJsonAsync<List<ProductItemInfoDto>>();
+
+            if (productItems == null)
+                throw new Exception("Can not get information.");
+
+            return productItems;
         }
 
         public async Task<OrderEmailDto?> CreateOrderAsync(OrderDto order)
@@ -94,12 +152,16 @@ namespace TechGear.OrderService.Services
 
                 if (order.CouponId != null)
                 {
-                    couponValue = await _context.Coupons
-                        .Where(c => c.Id == order.CouponId)
-                        .Select(c => c.Value)
-                        .FirstOrDefaultAsync();
+                    var coupon = await _context.Coupons.FindAsync(order.CouponId);
 
-                    paymentAmount -= couponValue;
+                    if (coupon != null && coupon.UsageLimit > 0)
+                    {
+                        couponValue = coupon.Value;
+                        paymentAmount -= couponValue;
+                        coupon.UsageLimit--;
+
+                        await _context.SaveChangesAsync();
+                    }
                 }
 
                 var client = _httpClientFactory.CreateClient("ApiGatewayClient");
@@ -193,7 +255,6 @@ namespace TechGear.OrderService.Services
             }
         }
 
-
         public async Task<bool> UpdateOrderAsync(OrderDto order)
         {
             var existingOrder = await _context.Orders
@@ -247,5 +308,28 @@ namespace TechGear.OrderService.Services
             _context.Orders.Remove(order);
             return await _context.SaveChangesAsync() > 0;
         }
+
+        public async Task<bool> IsValidRating(int orderId)
+        {
+            var deliveryDate = await _context.Deliveries
+                .Where(d => d.OrderId == orderId)
+                .Select(d => d.DeliveryDate)
+                .FirstOrDefaultAsync();
+
+            if (deliveryDate == null)
+            {
+                return false;
+            }
+
+            var daysSinceDelivery = (DateTime.Now - deliveryDate.Value).TotalDays;
+
+            if (daysSinceDelivery <= 14)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
     }
 }

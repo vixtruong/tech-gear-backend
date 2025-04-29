@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using TechGear.AuthService.Data;
 using TechGear.AuthService.Interfaces;
+using TechGear.AuthService.Services;
 
 namespace TechGear.AuthService
 {
@@ -27,7 +28,7 @@ namespace TechGear.AuthService
                     {
                         ValidIssuer = builder.Configuration["JwtConfig:Issuer"],
                         ValidAudience = builder.Configuration["JwtConfig:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtConfig:Key"])),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtConfig:Key"]!)),
                         ValidateIssuer = true,
                         ValidateAudience = true,
                         ValidateLifetime = true,
@@ -52,6 +53,7 @@ namespace TechGear.AuthService
             builder.Services.AddControllers();
 
             builder.Services.AddScoped<IAuthService, Services.AuthService>();
+            builder.Services.AddScoped<IEmailService, EmailService>();
 
             builder.Services.AddHttpClient("ApiGatewayClient", client =>
             {

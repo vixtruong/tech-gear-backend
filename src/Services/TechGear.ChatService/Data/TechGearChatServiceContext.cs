@@ -24,7 +24,20 @@ public partial class TechGearChatServiceContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__Messages__3214EC07C0E78E70");
 
-            entity.Property(e => e.ImageUrl).HasMaxLength(255);
+            entity.Property(e => e.Content).HasColumnType("nvarchar(max)");
+
+            entity.Property(e => e.IsImage)
+                .HasDefaultValue(false);
+
+            entity.Property(e => e.IsRead)
+                .HasDefaultValue(false);
+
+            entity.Property(e => e.ImageUrl)
+                .HasMaxLength(255);
+
+            entity.Property(e => e.SentAt)
+                .HasColumnName("SendAt")
+                .HasDefaultValueSql("(getdate())");
         });
 
         OnModelCreatingPartial(modelBuilder);

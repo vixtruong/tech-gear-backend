@@ -6,7 +6,9 @@ namespace TechGear.UserService.Interfaces
     {
         Task<UserDto?> AddUserAsync(UserDto user);
         Task<UserDto?> GetUserByIdAsync(int userId, int? userAddressId);
+        Task<string> GetUserNameAsync(int userId);
         Task<int?> GetPointAsync(int userId);
         Task<bool> UpdatePointAsync(int userId, int usedPoint);
+        Task<List<string>> GetUsernameByUserIds(List<int> ids);
     }
 }

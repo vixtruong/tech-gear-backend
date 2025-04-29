@@ -10,17 +10,26 @@ namespace TechGear.AuthService.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly IEmailService _emailService;
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public AuthController(IAuthService authService, IHttpClientFactory httpClientFactory)
+        public AuthController(IAuthService authService, IHttpClientFactory httpClientFactory, IEmailService emailService)
         {
             _authService = authService;
             _httpClientFactory = httpClientFactory;
+            _emailService = emailService;
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDto user)
         {
+            var otpValid = await _authService.IsOtpCodeValidAsync(user.Email, user.Otp);
+
+            if (!otpValid)
+            {
+                return BadRequest(new { message = "Invalid OTP." });
+            }
+
             // Call api from UserService to create User then create Account with userId
             var client = _httpClientFactory.CreateClient("ApiGatewayClient");
 
@@ -93,7 +102,7 @@ namespace TechGear.AuthService.Controllers
                 return BadRequest(new { message = "RefreshToken required." });
             }
 
-            var valid = await _authService.IsRefreshTokenValidAsync(request.RefreshToken);
+            var valid = await _authService.IsRefreshTokenValidAsync(request.UserId, request.RefreshToken);
 
             if (!valid)
             {
@@ -108,7 +117,7 @@ namespace TechGear.AuthService.Controllers
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto request)
         {
-            var valid = await _authService.IsRefreshTokenValidAsync(request.Token);
+            var valid = await _authService.IsRefreshTokenValidAsync(request.UserId, request.RefreshToken);
 
             if (!valid)
             {
@@ -125,7 +134,7 @@ namespace TechGear.AuthService.Controllers
             var newAccessToken = _authService.GenerateAccessToken(user);
             var newRefreshToken = _authService.GenerateRefreshToken();
 
-            await _authService.RevokeRefreshTokenAsync(request.Token);
+            await _authService.RevokeRefreshTokenAsync(request.RefreshToken);
             await _authService.StoreRefreshTokenAsync(user.UserId, newRefreshToken);
 
             return Ok(new
@@ -135,5 +144,28 @@ namespace TechGear.AuthService.Controllers
                 message = "Token refreshed successfully."
             });
         }
+
+        [HttpPost("otp/request")]
+        public async Task<IActionResult> RequestOtp([FromBody] OtpRequestDto request)
+        {
+            var otp = await _authService.GenerateOtpCodeAsync(request.Email);
+            await _emailService.SendOtpEmailAsync(request.Email, otp);
+
+            return Ok(new { message = "OTP sent successfully." });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto request)
+        {
+            var success = await _authService.ResetPasswordAsync(request);
+
+            if (!success)
+            {
+                return BadRequest(new { message = "Invalid email or OTP." });
+            }
+
+            return Ok(new { message = "Password reset successfully." });
+        }
+
     }
 }

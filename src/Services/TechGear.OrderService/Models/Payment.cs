@@ -11,7 +11,7 @@ public partial class Payment
 
     public int Amount { get; set; }
 
-    public string Method { get; set; } = null!;
+    public string? Method { get; set; } = null!;
 
     public DateTime? PaidAt { get; set; }
 

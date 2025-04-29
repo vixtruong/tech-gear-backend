@@ -11,7 +11,7 @@
         public DateTime OrderDate { get; set; }
         public decimal OriginalAmount { get; set; }
         public decimal FinalAmount { get; set; }
-        public string PaymentMethod { get; set; } = string.Empty;
+        public string? PaymentMethod { get; set; } = string.Empty;
         public string? Note { get; set; }
 
         public List<OrderItemEmailDto> Items { get; set; } = new List<OrderItemEmailDto>();

@@ -97,6 +97,12 @@ namespace TechGear.UserService.Services
             };
         }
 
+        public async Task<string> GetUserNameAsync(int userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            return user?.FullName ?? string.Empty;
+        }
+
         public async Task<int?> GetPointAsync(int userId)
         {
             return await _context.Users.Where(u => u.Id == userId)
@@ -128,6 +134,16 @@ namespace TechGear.UserService.Services
             {
                 return false;
             }
+        }
+
+        public async Task<List<string>> GetUsernameByUserIds(List<int> ids)
+        {
+            var usernames = await _context.Users
+                .Where(u => ids.Contains(u.Id))
+                .Select(u => u.FullName)
+                .ToListAsync();
+
+            return usernames;
         }
     }
 }

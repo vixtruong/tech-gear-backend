@@ -13,5 +13,7 @@
         public string? Address { get; set; } = null!;
 
         public string Role { get; set; } = null!;
+
+        public string Otp { get; set; } = null!;
     }
 }

@@ -28,6 +28,23 @@
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
     },
 
+    // ChatService - WebSocket
+    {
+      "DownstreamPathTemplate": "/wss",
+      "DownstreamScheme": "wss",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5003
+        }
+      ],
+      "UpstreamPathTemplate": "/wss",
+      "UpstreamHttpMethod": [],
+      "WebSocketOptions": {
+        "Enabled": true
+      }
+    },
+
     // UserService
     {
       "DownstreamPathTemplate": "/api/user/{everything}",

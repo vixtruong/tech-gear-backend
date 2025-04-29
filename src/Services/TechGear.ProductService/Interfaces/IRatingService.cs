@@ -5,11 +5,12 @@ namespace TechGear.ProductService.Interfaces
 {
     public interface IRatingService
     {
-        Task<IEnumerable<Rating>> GetRatingsByProductIdAsync(int productId);
+        Task<IEnumerable<RatingReviewDto>> GetRatingsByProductIdAsync(int productItemId);
+        Task<IEnumerable<RatingReviewDto>> GetRatingsByUserIdAsync(int userId);
         Task<AverageRatingDto> GetAverageRatingForProductIdAsync(int productId);
-        Task<bool> AddRatingAsync(Rating rating);
-        Task<bool> UpdateRatingAsync(Rating rating);
+        Task<bool> IsRated(int orderId, int productItemId);
+        Task<bool> AddRatingAsync(RatingDto rating);
+        Task<bool> UpdateRatingAsync(RatingDto rating);
         Task<bool> DeleteRatingAsync(int ratingId);
-
     }
 }

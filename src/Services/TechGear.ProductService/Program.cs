@@ -28,7 +28,7 @@ namespace TechGear.ProductService
                     {
                         ValidIssuer = builder.Configuration["JwtConfig:Issuer"],
                         ValidAudience = builder.Configuration["JwtConfig:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtConfig:Key"])),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtConfig:Key"]!)),
                         ValidateIssuer = true,
                         ValidateAudience = true,
                         ValidateLifetime = true,

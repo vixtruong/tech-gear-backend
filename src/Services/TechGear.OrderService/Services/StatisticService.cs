@@ -10,16 +10,26 @@ namespace TechGear.OrderService.Services
 
         public async Task<List<int>> GetBestSellerProductItemIds()
         {
-            return await _context.OrderItems
-                .GroupBy(oi => oi.ProductItemId)
-                .Select(g => new
-                {
-                    ProductItemId = g.Key,
-                    TotalQuantity = g.Sum(x => x.Quantity)
-                })
-                .OrderByDescending(x => x.TotalQuantity)
-                .Select(x => x.ProductItemId)
-                .ToListAsync();
+            try
+            {
+                var bestSellers = await _context.OrderItems
+                    .GroupBy(oi => oi.ProductItemId)
+                    .Select(g => new
+                    {
+                        ProductItemId = g.Key,
+                        TotalQuantity = g.Sum(x => x.Quantity)
+                    })
+                    .OrderByDescending(x => x.TotalQuantity)
+                    .Select(x => x.ProductItemId)
+                    .ToListAsync();
+
+                return bestSellers ?? new List<int>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetBestSellerProductItemIds: {ex.Message}");
+                return new List<int>();
+            }
         }
     }
 }

@@ -16,4 +16,8 @@ public partial class Message
     public bool IsImage { get; set; }
 
     public string? ImageUrl { get; set; }
+
+    public bool IsRead { get; set; }
+
+    public DateTime SentAt { get; set; }
 }

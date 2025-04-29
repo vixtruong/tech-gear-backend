@@ -108,10 +108,10 @@ public partial class TechGearProductServiceContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PK__Ratings__3214EC07AC3532D9");
 
-            entity.HasOne(d => d.Product).WithMany(p => p.Ratings)
-                .HasForeignKey(d => d.ProductId)
+            entity.HasOne(d => d.ProductItem).WithMany(p => p.Ratings)
+                .HasForeignKey(d => d.ProductItemId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Ratings__Product__403A8C7D");
+                .HasConstraintName("FK__Ratings__Product__03F0984C");
 
             entity.Property(e => e.LastUpdate)
                 .HasDefaultValueSql("(getdate())")

@@ -28,7 +28,7 @@ namespace TechGear.UserService
                     {
                         ValidIssuer = builder.Configuration["JwtConfig:Issuer"],
                         ValidAudience = builder.Configuration["JwtConfig:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtConfig:Key"])),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtConfig:Key"]!)),
                         ValidateIssuer = true,
                         ValidateAudience = true,
                         ValidateLifetime = true,
@@ -55,6 +55,11 @@ namespace TechGear.UserService
             builder.Services.AddScoped<IFavoriteService, FavoriteService>();
             builder.Services.AddScoped<ILoyaltyService, LoyaltyService>();
             builder.Services.AddScoped<IUserAddressService, UserAddressService>();
+
+            //builder.Services.AddHttpClient("ApiGatewayClient", client =>
+            //{
+            //    client.BaseAddress = new Uri("https://localhost:5001");
+            //});
 
             var app = builder.Build();
 

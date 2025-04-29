@@ -7,7 +7,7 @@ using System.Globalization;
 
 namespace TechGear.OrderService.Services
 {
-    public class EmailService(TechGearOrderServiceContext context, IHttpClientFactory httpClientFactory)
+    public class EmailService()
         : IEmailService
     {
         public async Task SendOrderConfirmationEmailAsync(OrderEmailDto order)

@@ -34,7 +34,7 @@ namespace TechGear.ProductService.Services
         public async Task<VariationOption?> AddVariationOptionAsync(VariationOptionDto variationOption)
         {
             var existOption =
-                await _context.VariationOptions.FirstOrDefaultAsync(vo => vo.Value == variationOption.Value);
+                await _context.VariationOptions.FirstOrDefaultAsync(vo => vo.Value == variationOption.Value && vo.VariationId == variationOption.VariationId);
 
             if (existOption != null) return null;
 

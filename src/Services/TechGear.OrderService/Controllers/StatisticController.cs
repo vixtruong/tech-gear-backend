@@ -13,9 +13,15 @@ namespace TechGear.OrderService.Controllers
         [HttpGet("best-seller-product-item-ids")]
         public async Task<IActionResult> GetBestSellerProductItemIds()
         {
-            var productItemIds = await _statisticService.GetBestSellerProductItemIds();
-
-            return Ok(productItemIds);
+            try
+            {
+                var productItemIds = await _statisticService.GetBestSellerProductItemIds();
+                return Ok(productItemIds);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
         }
     }
 }

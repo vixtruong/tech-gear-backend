@@ -7,7 +7,9 @@ public partial class Rating
 {
     public int Id { get; set; }
 
-    public int ProductId { get; set; }
+    public int ProductItemId { get; set; }
+
+    public int OrderId { get; set; }
 
     public int UserId { get; set; }
 
@@ -17,5 +19,5 @@ public partial class Rating
 
     public DateTime LastUpdate { get; set; }
 
-    public virtual Product Product { get; set; } = null!;
+    public virtual ProductItem ProductItem { get; set; } = null!;
 }

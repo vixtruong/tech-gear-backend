@@ -20,6 +20,8 @@ public partial class TechGearAuthServiceContext : DbContext
 
     public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
 
+    public virtual DbSet<Otp> Otps { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AuthUser>(entity =>
@@ -43,6 +45,19 @@ public partial class TechGearAuthServiceContext : DbContext
             entity.Property(e => e.Token).HasMaxLength(255);
 
             entity.Property(e => e.IsRevoked)
+                .IsRequired()
+                .HasDefaultValue(false);
+
+        });
+
+        modelBuilder.Entity<Otp>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__OTPs__3214EC0712DB16C2");
+
+            entity.Property(e => e.ExpiryTime).HasColumnType("datetime");
+            entity.Property(e => e.Code).HasMaxLength(6);
+
+            entity.Property(e => e.IsUsed)
                 .IsRequired()
                 .HasDefaultValue(false);
 

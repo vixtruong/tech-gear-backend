@@ -6,7 +6,7 @@ using TechGear.OrderService.Models;
 
 namespace TechGear.OrderService.Services
 {
-    public class CartService(TechGearOrderServiceContext context, IHttpClientFactory httpClientFactory) : ICartService
+    public class CartService(TechGearOrderServiceContext context) : ICartService
     {
         private readonly TechGearOrderServiceContext _context = context;
 
@@ -25,31 +25,6 @@ namespace TechGear.OrderService.Services
 
             return results;
         }
-
-        //public async Task<IEnumerable<CartItemDto>?> GetAllCartItemsByIds(List<int> productItemIds)
-        //{
-        //    var client = _httpClientFactory.CreateClient("ApiGatewayClient");
-
-        //    var response = await client.PostAsJsonAsync("api/v1/ProductItems/by-ids", productItemIds);
-
-        //    if (!response.IsSuccessStatusCode)
-        //    {
-        //        return null;
-        //    }
-
-        //    var productItemsInfo = await response.Content.ReadFromJsonAsync<List<ProductItemInfoDto>>();
-
-        //    var result = productItemsInfo?.Select(p => new CartItemDto
-        //    {
-        //        ProductItemId = p.ProductItemId,
-        //        Sku = p.Sku,
-        //        ProductName = p.ProductName,
-        //        ImageUrl = p.ImageUrl,
-        //        Price = p.Price,
-        //    });
-
-        //    return result;
-        //}
 
         public async Task<bool> UpdateListToCartAsync(int userId, List<CartItemDto>? cartItems)
         {

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TechGear.OrderService.DTOs;
 using TechGear.OrderService.Interfaces;
 using TechGear.OrderService.Services;
@@ -17,6 +18,26 @@ namespace TechGear.OrderService.Controllers
         {
             var orders = await _orderService.GetAllOrdersAsync();
             return Ok(orders);
+        }
+
+        [Authorize]
+        [HttpGet("get-by-user/{userId}")]
+        public async Task<IActionResult> GetOrdersByUserId(int userId)
+        {
+            var orders = await _orderService.GetOrdersByUserIdAsync(userId);
+            return Ok(orders);
+        }
+
+        [HttpGet("get-order-items-info/{orderId}")]
+        public async Task<IActionResult> GetOrderItemsInfoByOrderId(int orderId)
+        {
+            var orderItemsInfo = await _orderService.GetOrderItemsInfoByOrderId(orderId);
+            if (orderItemsInfo == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(orderItemsInfo);
         }
 
         [HttpGet("{orderId}")]
@@ -73,5 +94,13 @@ namespace TechGear.OrderService.Controllers
             }
             return NoContent();
         }
+
+        [HttpGet("is-valid-rating/{orderId}")]
+        public async Task<IActionResult> IsValidRating(int orderId)
+        {
+            var isValid = await _orderService.IsValidRating(orderId);
+            return Ok(isValid);
+        }
+
     }
 }

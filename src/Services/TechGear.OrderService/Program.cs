@@ -16,6 +16,12 @@ namespace TechGear.OrderService
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+            builder.Services.AddLogging(logging =>
+            {
+                logging.AddConsole();
+                logging.AddDebug();
+            });
+
             builder.Services.AddDbContext<TechGearOrderServiceContext>(options =>
                 options.UseSqlServer(connectionString));
 
@@ -27,7 +33,7 @@ namespace TechGear.OrderService
                     {
                         ValidIssuer = builder.Configuration["JwtConfig:Issuer"],
                         ValidAudience = builder.Configuration["JwtConfig:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtConfig:Key"])),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtConfig:Key"]!)),
                         ValidateIssuer = true,
                         ValidateAudience = true,
                         ValidateLifetime = true,

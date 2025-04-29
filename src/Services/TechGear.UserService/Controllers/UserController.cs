@@ -41,6 +41,19 @@ namespace TechGear.UserService.Controllers
             return Ok(user);
         }
 
+        [HttpGet("{userId}/name")]
+        public async Task<IActionResult> GetUserName(int userId)
+        {
+            var userName = await _userService.GetUserNameAsync(userId);
+
+            if (string.IsNullOrEmpty(userName))
+            {
+                return NotFound(new { message = "User not found." });
+            }
+
+            return Ok(userName);
+        }
+
         [HttpGet("{userId}/points")]
         public async Task<IActionResult> UserPoints(int userId)
         {
@@ -65,6 +78,14 @@ namespace TechGear.UserService.Controllers
             }
 
             return Ok(new { message = "Points updated successfully." });
+        }
+
+        [HttpPost("user-names")]
+        public async Task<IActionResult> GetUsernameByIds([FromBody] List<int> ids)
+        {
+            var userNames = await _userService.GetUsernameByUserIds(ids);
+
+            return Ok(userNames);
         }
     }
 }
