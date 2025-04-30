@@ -76,43 +76,60 @@ namespace TechGear.ChatService.Services
 
         public async Task<IEnumerable<ChatUserDto>?> GetChatUsersAsync()
         {
-            var userIds = _context.Messages.Select(m => m.SenderId)
-                .Union(_context.Messages.Select(m => m.ReceiverId))
+            var userId = 1;
+
+            var userIds = await _context.Messages
+                .Where(m => m.SenderId == userId || m.ReceiverId == userId)
+                .Select(m => m.SenderId == userId ? m.ReceiverId : m.SenderId)
                 .Distinct()
-                .Where(id => id != 1)
-                .ToList();
+                .ToListAsync();
 
             var client = _httpClientFactory.CreateClient("ApiGatewayClient");
-
             var response = await client.PostAsJsonAsync("api/v1/users/user-names", userIds);
 
-            if (!response.IsSuccessStatusCode)
-            {
-                return null;
-            }
+            if (!response.IsSuccessStatusCode) return null;
 
             var userNames = await response.Content.ReadFromJsonAsync<List<string>>();
-
             var chatUsers = new List<ChatUserDto>();
+
+            var unreadCounts = await _context.Messages
+                .Where(m => m.ReceiverId == userId && userIds.Contains(m.SenderId) && !m.IsRead)
+                .GroupBy(m => m.SenderId)
+                .ToDictionaryAsync(g => g.Key, g => g.Count());
+
+            var allMessages = await _context.Messages
+                .Where(m =>
+                    (m.SenderId == userId && userIds.Contains(m.ReceiverId)) ||
+                    (m.ReceiverId == userId && userIds.Contains(m.SenderId)))
+                .ToListAsync();
+
+            var lastMessages = allMessages
+                .GroupBy(m =>
+                    m.SenderId < m.ReceiverId
+                        ? new { User1 = m.SenderId, User2 = m.ReceiverId }
+                        : new { User1 = m.ReceiverId, User2 = m.SenderId })
+                .Select(g => g.OrderByDescending(m => m.SentAt).First())
+                .ToDictionary(
+                    m => m.SenderId == userId ? m.ReceiverId : m.SenderId,
+                    m => m);
 
             for (int i = 0; i < userIds.Count; i++)
             {
-                var i1 = i;
-                //var message = await _context.Messages.Where(m => m.ReceiverId == 1 && m.SenderId == userIds[i1]).FirstOrDefaultAsync();
-                var unreadCount = await GetUnreadMessageCountAsync(userIds[i], 1);
-                var userName = userNames![i];
-                var lastUpdate = await _context.Messages.Where(m => m.ReceiverId == 1 && m.SenderId == userIds[i])
-                    .Select(m => m.SentAt).MaxAsync();
+                var uid = userIds[i];
+                lastMessages.TryGetValue(uid, out var lastMessage);
 
-                var newChatUser = new ChatUserDto
+                Console.WriteLine(lastMessage!.SenderId);
+
+                chatUsers.Add(new ChatUserDto
                 {
-                    Id = userIds[i],
-                    UserName = userName,
-                    UnreadMessageCount = unreadCount,
-                    LastMessageSentAt = lastUpdate
-                };
-
-                chatUsers.Add(newChatUser);
+                    Id = uid,
+                    UserName = userNames![i],
+                    UnreadMessageCount = unreadCounts.GetValueOrDefault(uid, 0),
+                    LastMessageSentAt = lastMessage?.SentAt ?? DateTime.MinValue,
+                    LastMessagePreview = lastMessage?.Content,
+                    IsImage = lastMessage?.IsImage ?? false,
+                    SenderId = lastMessage!.SenderId
+                });
             }
 
             return chatUsers;
