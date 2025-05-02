@@ -192,5 +192,32 @@ namespace TechGear.AuthService.Services
             return true;
         }
 
+        public async Task<bool> ChangePasswordAsync(ChangePasswordDto dto)
+        {
+            var account = await _context.AuthUsers
+                .FirstOrDefaultAsync(u => u.UserId == dto.UserId);
+
+            if (account == null)
+            {
+                return false;
+            }
+
+            var isOldPasswordValid = BCrypt.Net.BCrypt.Verify(dto.OldPassword, account.HashedPassword);
+            if (!isOldPasswordValid)
+            {
+                return false;
+            }
+
+            if (dto.NewPassword != dto.ConfirmPassword)
+            {
+                return false;
+            }
+
+            account.HashedPassword = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+
+            _context.AuthUsers.Update(account);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

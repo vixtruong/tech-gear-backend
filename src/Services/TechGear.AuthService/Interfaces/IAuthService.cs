@@ -17,5 +17,6 @@ namespace TechGear.AuthService.Interfaces
         Task<bool> RegisterAsync(AuthUser newAccount, string rawPassword);
         Task<int> GenerateOtpCodeAsync(string email);
         Task<bool> ResetPasswordAsync(ResetPasswordDto dto);
+        Task<bool> ChangePasswordAsync(ChangePasswordDto dto);
     }
 }

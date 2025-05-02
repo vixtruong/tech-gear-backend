@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using TechGear.ChatService.Data;
+using TechGear.ChatService.DTOs;
 using TechGear.ChatService.Interfaces;
 using TechGear.ChatService.Services;
 using TechGear.ChatService.WebSockets;
@@ -88,6 +89,7 @@ namespace TechGear.ChatService
                     var authResult = await context.AuthenticateAsync(JwtBearerDefaults.AuthenticationScheme);
                     if (!authResult.Succeeded)
                     {
+                        Console.WriteLine($"Authentication failed: {authResult.Failure?.Message}");
                         context.Response.StatusCode = 401;
                         await context.Response.WriteAsync("Invalid or missing token");
                         return;
@@ -96,6 +98,7 @@ namespace TechGear.ChatService
                     var userId = context.Request.Query["userId"];
                     if (string.IsNullOrEmpty(userId))
                     {
+                        Console.WriteLine("Missing userId in WebSocket request");
                         context.Response.StatusCode = 400;
                         await context.Response.WriteAsync("Missing userId");
                         return;
@@ -106,45 +109,37 @@ namespace TechGear.ChatService
 
                     socketManager.AddSocket(webSocket, userId!);
 
-                    await HandleWebSocketAsync(webSocket, socketManager, userId!);
+                    socketManager.OnReceiveText += async (uid, message) =>
+                    {
+                        Console.WriteLine($"Received text from {uid}: {message}");
+                        var messageService = context.RequestServices.GetRequiredService<IMessageService>();
+                        // Giả sử message là JSON, cần parse để lưu vào DB
+                        try
+                        {
+                            var messageDto = System.Text.Json.JsonSerializer.Deserialize<MessageDto>(message);
+                            await messageService.SendMessageAsync(messageDto!);
+                            await socketManager.SendMessageToUser(messageDto!.ReceiverId.ToString(), message);
+                            await socketManager.SendMessageToUser(messageDto.SenderId.ToString(), message);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error processing message from {uid}: {ex.Message}");
+                        }
+                    };
+
+                    socketManager.OnReceiveBinary += (uid, payload) =>
+                    {
+                        Console.WriteLine($"Received binary from {uid}: {payload.Length} bytes");
+                    };
+
+                    await socketManager.ReceiveMessagesUntilCloseAsync(webSocket, userId!);
                 }
                 else
                 {
                     context.Response.StatusCode = 400;
+                    await context.Response.WriteAsync("WebSocket request expected");
                 }
             });
-
-            async Task HandleWebSocketAsync(WebSocket webSocket, WebSocketConnectionManager socketManager, string userId)
-            {
-                var buffer = new byte[1024 * 4];
-                try
-                {
-                    while (webSocket.State == WebSocketState.Open)
-                    {
-                        var result = await webSocket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-                        if (result.MessageType == WebSocketMessageType.Close)
-                        {
-                            socketManager.RemoveSocket(userId);
-                            await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closed by client", CancellationToken.None);
-                            break;
-                        }
-                    }
-                }
-                catch (WebSocketException ex)
-                {
-                    Console.WriteLine($"WebSocket error for user {userId}: {ex.Message}");
-                    socketManager.RemoveSocket(userId);
-                    if (webSocket.State != WebSocketState.Closed && webSocket.State != WebSocketState.Aborted)
-                    {
-                        await webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closed due to error", CancellationToken.None);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Unexpected error for user {userId}: {ex.Message}");
-                    socketManager.RemoveSocket(userId);
-                }
-            }
 
             app.Run();
         }

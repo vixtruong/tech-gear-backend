@@ -39,7 +39,6 @@ namespace TechGear.ChatService.Controllers
             }
 
             var newMessage = await _messageService.SendMessageAsync(message);
-
             var messageJson = System.Text.Json.JsonSerializer.Serialize(newMessage);
             await _webSocketManager.SendMessageToUser(newMessage.ReceiverId.ToString(), messageJson);
             await _webSocketManager.SendMessageToUser(newMessage.SenderId.ToString(), messageJson);
@@ -75,7 +74,6 @@ namespace TechGear.ChatService.Controllers
         public async Task<IActionResult> GetUserInfos()
         {
             var users = await _messageService.GetChatUsersAsync();
-
             return Ok(users);
         }
     }

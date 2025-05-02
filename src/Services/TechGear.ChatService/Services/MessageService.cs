@@ -81,7 +81,7 @@ namespace TechGear.ChatService.Services
             var userIds = await _context.Messages
                 .Where(m => m.SenderId == userId || m.ReceiverId == userId)
                 .Select(m => m.SenderId == userId ? m.ReceiverId : m.SenderId)
-                .Distinct()
+                .Distinct() 
                 .ToListAsync();
 
             var client = _httpClientFactory.CreateClient("ApiGatewayClient");

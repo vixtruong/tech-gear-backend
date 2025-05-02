@@ -167,5 +167,24 @@ namespace TechGear.AuthService.Controllers
             return Ok(new { message = "Password reset successfully." });
         }
 
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto request)
+        {
+            var user = await _authService.GetByUserIdAsync(request.UserId);
+
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found." });
+            }
+
+            var success = await _authService.ChangePasswordAsync(request);
+
+            if (!success)
+            {
+                return BadRequest(new { message = "Failed to change password. Please check information." });
+            }
+
+            return Ok(new { message = "Password changed successfully." });
+        }
     }
 }
