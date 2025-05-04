@@ -175,8 +175,15 @@ namespace TechGear.OrderService.Services
 
                     newOrder.Point = maxPointToUse;
 
+                    var usePointDto = new UsePointDto
+                    {
+                        Point = maxPointToUse,
+                        Action = "use",
+                        OrderId = newOrder.Id
+                    };
+
                     var response = await client.PutAsJsonAsync(
-                        $"api/v1/users/{order.UserId}/points", maxPointToUse);
+                        $"api/v1/users/{order.UserId}/points", usePointDto);
 
                     if (!response.IsSuccessStatusCode)
                     {

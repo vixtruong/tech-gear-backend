@@ -6,6 +6,6 @@ namespace TechGear.UserService.Interfaces
     {
         Task<IEnumerable<Loyalty>> GetAllLoyaltiesByUserIdAsync(int userId);
         Task<Loyalty?> GetLoyaltyByIdAsync(int id);
-        Task<bool> AddLoyaltyPointsAsync(int userId, int fromOrderId, int points);
+        Task<bool> AddLoyaltyPointsAsync(int userId, int fromOrderId, int points, string action);
     }
 }

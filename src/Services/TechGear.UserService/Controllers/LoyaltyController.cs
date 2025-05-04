@@ -14,7 +14,7 @@ namespace TechGear.UserService.Controllers
         [HttpPost("add")]
         public async Task<IActionResult> AddLoyaltyPoints([FromBody] AddLoyaltyPointsRequest request)
         {
-            var success = await _loyaltyService.AddLoyaltyPointsAsync(request.UserId, request.OrderId, request.Point);
+            var success = await _loyaltyService.AddLoyaltyPointsAsync(request.UserId, request.OrderId, request.Point, request.Action);
             if (!success)
             {
                 return BadRequest(new { message = "Failed to add loyalty points." });
@@ -43,7 +43,7 @@ namespace TechGear.UserService.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateLoyalty([FromBody] Loyalty loyalty)
         {
-            var success = await _loyaltyService.AddLoyaltyPointsAsync(loyalty.UserId, loyalty.FromOrderId, loyalty.Point);
+            var success = await _loyaltyService.AddLoyaltyPointsAsync(loyalty.UserId, loyalty.FromOrderId, loyalty.Point, loyalty.Action);
             if (!success)
             {
                 return BadRequest(new { message = "Failed to create loyalty." });

@@ -25,7 +25,7 @@ namespace TechGear.UserService.Services
             }).ToListAsync();
         }
 
-        public async Task<bool> AddUserAddressAsync(UserAddressDto dto)
+        public async Task<UserAddressDto> AddUserAddressAsync(UserAddressDto dto)
         {
             var exist = await _context.UserAddresses.AnyAsync(u => u.UserId == dto.UserId);
 
@@ -42,7 +42,16 @@ namespace TechGear.UserService.Services
             _context.UserAddresses.Add(newAddress);
             await _context.SaveChangesAsync();
 
-            return true;
+            return new UserAddressDto
+            {
+                Id = newAddress.Id,
+                UserId = newAddress.UserId,
+                Address = newAddress.Address,
+                RecipientName = newAddress.RecipientName,
+                RecipientPhone = newAddress.RecipientPhone,
+                IsDefault = newAddress.IsDefault,
+                CreatedAt = newAddress.CreatedAt
+            };
         }
 
         public async Task<bool> RemoveUserAddressAsync(int addressId)
@@ -77,5 +86,33 @@ namespace TechGear.UserService.Services
 
             return true;
         }
+
+        public async Task<bool> SetDefaultAddressAsync(int userId, int addressId)
+        {
+            var address = await _context.UserAddresses.FindAsync(addressId);
+
+            if (address == null || address.UserId != userId)
+            {
+                return false;
+            }
+
+            // Set tất cả các địa chỉ của user về false
+            var allUserAddresses = await _context.UserAddresses
+                .Where(u => u.UserId == userId && u.IsDefault)
+                .ToListAsync();
+
+            foreach (var addr in allUserAddresses)
+            {
+                addr.IsDefault = false;
+            }
+
+            // Gán địa chỉ mới là mặc định
+            address.IsDefault = true;
+
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
     }
 }

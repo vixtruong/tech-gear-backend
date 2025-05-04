@@ -22,7 +22,7 @@ namespace TechGear.UserService.Services
                 .FirstOrDefaultAsync(l => l.Id == id);
         }
 
-        public async Task<bool> AddLoyaltyPointsAsync(int userId, int fromOrderId, int point)
+        public async Task<bool> AddLoyaltyPointsAsync(int userId, int fromOrderId, int point, string action)
         {
             var existLoyalty = await _context.Loyalties
                 .FirstOrDefaultAsync(l => l.UserId == userId && l.FromOrderId == fromOrderId);
@@ -36,6 +36,7 @@ namespace TechGear.UserService.Services
                 UserId = userId,
                 FromOrderId = fromOrderId,
                 Point = point,
+                Action = action,
                 CreatedAt = DateTime.UtcNow.AddHours(7)
             };
 

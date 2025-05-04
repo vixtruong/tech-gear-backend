@@ -28,6 +28,19 @@ namespace TechGear.UserService.Controllers
             return Ok(result);
         }
 
+        [HttpPut("edit")]
+        public async Task<IActionResult> EditUser([FromBody] EditProfileDto dto)
+        {
+            var success = await _userService.UpdateUserAsync(dto);
+
+            if (!success)
+            {
+                return BadRequest(new { message = "Failed to update user." });
+            }
+
+            return Ok(new { message = "User updated successfully." });
+        }
+
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetUserById(int userId, [FromQuery] int? userAddressId)
         {
@@ -68,9 +81,9 @@ namespace TechGear.UserService.Controllers
         }
 
         [HttpPut("{userId}/points")]
-        public async Task<IActionResult> UpdateUserPoints(int userId, [FromBody] int usedPoint)
+        public async Task<IActionResult> UpdateUserPoints(int userId, [FromBody] UsePointDto dto)
         {
-            var success = await _userService.UpdatePointAsync(userId, usedPoint);
+            var success = await _userService.UpdatePointAsync(userId, dto.OrderId ,dto.Point);
 
             if (!success)
             {

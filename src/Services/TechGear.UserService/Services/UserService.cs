@@ -75,6 +75,31 @@ namespace TechGear.UserService.Services
             }
         }
 
+        public async Task<bool> UpdateUserAsync(EditProfileDto dto)
+        {
+            var user = await _context.Users.FindAsync(dto.Id);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            user.FullName = dto.FullName;
+            user.PhoneNumber = dto.PhoneNumber;
+            user.Email = dto.Email;
+
+            _context.Users.Update(user);
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return false;
+            }
+        }
+
         public async Task<UserDto?> GetUserByIdAsync(int userId, int? userAddressId)
         {
             var user = await _context.Users
@@ -110,7 +135,7 @@ namespace TechGear.UserService.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<bool> UpdatePointAsync(int userId, int usedPoint)
+        public async Task<bool> UpdatePointAsync(int userId, int orderId ,int usedPoint)
         {
             var user = await _context.Users.FindAsync(userId);
             if (user == null)
@@ -124,6 +149,17 @@ namespace TechGear.UserService.Services
             }
 
             user.LoyaltyPoint -= usedPoint;
+
+            var loyalty = new Loyalty
+            {
+                UserId = userId,
+                FromOrderId = orderId,
+                Point = -usedPoint,
+                Action = "use",
+                CreatedAt = DateTime.UtcNow.AddHours(7),
+            };
+
+            _context.Loyalties.Add(loyalty);
 
             try
             {

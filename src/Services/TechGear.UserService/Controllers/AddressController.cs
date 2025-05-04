@@ -52,5 +52,18 @@ namespace TechGear.UserService.Controllers
 
             return NoContent();
         }
+
+        [HttpPost("set-default")]
+        public async Task<IActionResult> SetDefaultAddress([FromBody] SetDefaultAddressDto dto)
+        {
+            var success = await _userAddressService.SetDefaultAddressAsync(dto.UserId, dto.AddressId);
+
+            if (!success)
+            {
+                return NotFound(new { message = "Address not found" });
+            }
+
+            return NoContent();
+        }
     }
 }
