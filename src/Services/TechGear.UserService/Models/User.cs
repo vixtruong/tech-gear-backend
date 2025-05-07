@@ -15,6 +15,8 @@ public partial class User
 
     public int LoyaltyPoint { get; set; }
 
+    public DateTime CreatedAt { get; set; }
+
     public virtual ICollection<Loyalty> Loyalties { get; set; } = new List<Loyalty>();
 
     public virtual ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();

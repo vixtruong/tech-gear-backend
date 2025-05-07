@@ -60,6 +60,8 @@ public partial class TechGearOrderServiceContext : DbContext
 
             entity.Property(e => e.ExpirationDate);
 
+            entity.Property(e => e.IsDeleted).HasDefaultValue(false);
+
             entity.Property(e => e.MinimumOrderAmount)
                 .HasDefaultValue(0);
         });
@@ -115,7 +117,19 @@ public partial class TechGearOrderServiceContext : DbContext
             entity.Property(e => e.Note)
                 .HasMaxLength(255);
 
+            entity.Property(e => e.CancelReason)
+                .HasMaxLength(255);
+
             entity.Property(e => e.DeliveryDate)
+                .HasColumnType("datetime");
+
+            entity.Property(e => e.ConfirmDate)
+                .HasColumnType("datetime");
+
+            entity.Property(e => e.ShipDate)
+                .HasColumnType("datetime");
+
+            entity.Property(e => e.CancelDate)
                 .HasColumnType("datetime");
 
             entity.HasOne(e => e.Order)

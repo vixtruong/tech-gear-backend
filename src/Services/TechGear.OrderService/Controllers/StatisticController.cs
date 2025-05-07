@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TechGear.OrderService.DTOs;
 using TechGear.OrderService.Interfaces;
 
 namespace TechGear.OrderService.Controllers
@@ -10,6 +11,20 @@ namespace TechGear.OrderService.Controllers
     {
         private readonly IStatisticService _statisticService = statisticService;
 
+        [HttpGet("payments")]
+        public async Task<IActionResult> GetPayments()
+        {
+            try
+            {
+                var payments = await _statisticService.GetPaymentsAsync();
+                return Ok(payments);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
+        }
+
         [HttpGet("best-seller-product-item-ids")]
         public async Task<IActionResult> GetBestSellerProductItemIds()
         {
@@ -18,10 +33,62 @@ namespace TechGear.OrderService.Controllers
                 var productItemIds = await _statisticService.GetBestSellerProductItemIds();
                 return Ok(productItemIds);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
             }
+        }
+
+        [HttpGet("best-selling")]
+        public async Task<IActionResult> GetBestSelling()
+        {
+            try
+            {
+                var result = await _statisticService.GetBestSellingAsync();
+                return Ok(result);
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Internal server error");
+            }
+        }
+
+        [HttpGet("annual")]
+        public async Task<ActionResult<MockDataDto>> GetAnnualStats()
+        {
+            var result = await _statisticService.GetDataAnnuallyAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("quarter")]
+        public async Task<ActionResult<MockDataDto>> GetQuarterStats()
+        {
+            var result = await _statisticService.GetDataQuarterlyAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("month")]
+        public async Task<ActionResult<MockDataDto>> GetMonthlyStats()
+        {
+            var result = await _statisticService.GetDataMonthlyAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("week")]
+        public async Task<ActionResult<MockDataDto>> GetWeeklyStats()
+        {
+            var result = await _statisticService.GetDataWeeklyAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("custom")]
+        public async Task<ActionResult<MockDataDto>> GetCustomStats([FromQuery] DateTime start, [FromQuery] DateTime end)
+        {
+            if (start >= end)
+                return BadRequest("Start date must be earlier than end date");
+
+            var result = await _statisticService.GetDataCustomAsync(start, end);
+            return Ok(result);
         }
     }
 }

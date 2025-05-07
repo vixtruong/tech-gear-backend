@@ -31,6 +31,9 @@ public partial class TechGearAuthServiceContext : DbContext
             entity.HasIndex(e => e.Email, "UQ__AuthUser__536C85E41EC3B0C8").IsUnique();
 
             entity.Property(e => e.HashedPassword).HasMaxLength(255);
+
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+
             entity.Property(e => e.Role)
                 .HasMaxLength(50)
                 .HasDefaultValue("User");

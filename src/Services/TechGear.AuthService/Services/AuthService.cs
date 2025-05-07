@@ -88,7 +88,7 @@ namespace TechGear.AuthService.Services
 
             var verified = BCrypt.Net.BCrypt.Verify(password, user.HashedPassword);
 
-            return verified ? user : null;
+            return verified && user.IsActive ? user : null;
         }
 
         public string GenerateAccessToken(AuthUser user)

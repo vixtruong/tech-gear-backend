@@ -11,10 +11,24 @@ namespace TechGear.OrderService.Services
         private readonly TechGearOrderServiceContext _context = context;
         private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
 
+        public async Task<TotalOrderDto> GetTotalOrderAsync()
+        {
+            var totalOrders = await _context.Orders.CountAsync();
+            var totalRevenue = await _context.Payments.Where(o => o.PaidAt != null).SumAsync(o => o.Amount);
+
+            return new TotalOrderDto
+            {
+                TotalOrders = totalOrders,
+                TotalRevenue = totalRevenue
+            };
+        }
+
         public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync()
         {
             var orders = await _context.Orders
                 .Include(o => o.OrderItems)
+                .Include(o => o.Payments)
+                .Include(o => o.Delivery)
                 .ToListAsync();
 
             return orders.Select(o => new OrderDto
@@ -24,7 +38,15 @@ namespace TechGear.OrderService.Services
                 UserAddressId = o.UserAddressId,
                 CouponId = o.CouponId,
                 TotalAmount = o.TotalAmount,
+                PaymentAmount = o.Payments.FirstOrDefault()?.Amount,
+                PaymentMethod = o.Payments.FirstOrDefault()?.Method!,
                 CreatedAt = o.CreateAt,
+                DeliveredDate = o.Delivery.DeliveryDate,
+                ConfirmedDate = o.Delivery.ConfirmDate,
+                ShippedDate = o.Delivery.ShipDate,
+                CanceledDate = o.Delivery.CancelDate,
+                CancelReason = o.Delivery.CancelReason,
+                Status = o.Delivery.Status,
                 OrderItems = o.OrderItems.Select(oi => new OrderItemDto
                 {
                     Id = oi.Id,
@@ -55,6 +77,10 @@ namespace TechGear.OrderService.Services
                 PaymentMethod = o.Payments.FirstOrDefault()?.Method!,
                 CreatedAt = o.CreateAt,
                 DeliveredDate = o.Delivery.DeliveryDate,
+                ConfirmedDate = o.Delivery.ConfirmDate,
+                ShippedDate = o.Delivery.ShipDate,
+                CanceledDate = o.Delivery.CancelDate,
+                CancelReason = o.Delivery.CancelReason,
                 Status = o.Delivery.Status,
                 OrderItems = o.OrderItems.Select(oi => new OrderItemDto
                 {
@@ -94,6 +120,86 @@ namespace TechGear.OrderService.Services
                 }).ToList()
             };
         }
+
+        public async Task<OrderDetailDto?> GetOrderDetailByIdAsync(int orderId)
+        {
+            var order = await _context.Orders
+                .Include(o => o.OrderItems)
+                .Include(o => o.Payments)
+                .Include(o => o.Delivery)
+                .FirstOrDefaultAsync(o => o.Id == orderId);
+
+            if (order == null)
+            {
+                Console.WriteLine($"Không tìm thấy đơn hàng với ID {orderId}");
+                return null;
+            }
+
+            var productItemIds = order.OrderItems.Select(oi => oi.ProductItemId).ToList();
+
+            var client = _httpClientFactory.CreateClient("ApiGatewayClient");
+
+            var userResponse = await client.GetFromJsonAsync<UserAddressInfoDto>(
+                $"api/v1/users/{order.UserId}/address?userAddressId={order.UserAddressId}");
+
+            if (userResponse == null)
+            {
+                Console.WriteLine("Không lấy được thông tin user.");
+                throw new Exception("User info not found.");
+            }
+
+            var productItemResponse = await client.PostAsJsonAsync("api/v1/productItems/by-ids", productItemIds);
+            if (!productItemResponse.IsSuccessStatusCode)
+                throw new Exception("Không thể lấy thông tin sản phẩm.");
+
+            var productItems = await productItemResponse.Content.ReadFromJsonAsync<List<ProductItemInfoDto>>();
+
+            if (productItems == null)
+                throw new Exception("Dữ liệu sản phẩm rỗng.");
+
+            var orderItems = order.OrderItems.Select(orderItem =>
+            { 
+                var productInfo = productItems.FirstOrDefault(p => p.ProductItemId == orderItem.ProductItemId);
+
+                return new OrderItemDetailDto
+                {
+                    ProductItemId = orderItem.ProductItemId,
+                    ProductName = productInfo?.ProductName ?? "",
+                    Sku = productInfo?.Sku ?? "",
+                    ImageUrl = productInfo?.ImageUrl ?? "",
+                    Price = productInfo?.Price ?? 0,
+                    Discount = productInfo?.Discount ?? 0,
+                    Quantity = orderItem.Quantity,
+                    TotalPrice = orderItem.Quantity * (int)(productInfo?.Price ?? 0 * (1 - (productInfo?.Discount ?? 0) / 100.0m))
+                };
+            }).ToList();
+
+
+            var coupon = await _context.Coupons
+                .FirstOrDefaultAsync(c => c.Id == order.CouponId);
+
+            var firstPayment = order.Payments.FirstOrDefault();
+
+            var orderDetailDto = new OrderDetailDto
+            {
+                OrderId = order.Id,
+                UserEmail = userResponse.Email,
+                RecipientName = userResponse.RecipientName ?? "",
+                RecipientPhone = userResponse.RecipientPhone ?? "",
+                Address = userResponse.Address ?? "",
+                CouponCode = coupon?.Code ?? "",
+                Point = order.Point,
+                OrderTotalPrice = order.TotalAmount,
+                PaymentTotalPrice = firstPayment?.Amount ?? 0,
+                PaymentMethod = firstPayment?.Method ?? "Unknown",
+                PaymentStatus = firstPayment?.PaidAt == null ? "Unpaid" : "Paid",
+                CreatedAt = order.CreateAt,
+                OrderItems = orderItems,
+            };
+
+            return orderDetailDto;
+        }
+
 
         public async Task<IEnumerable<ProductItemInfoDto>?> GetOrderItemsInfoByOrderId(int orderId)
         {
@@ -298,6 +404,54 @@ namespace TechGear.OrderService.Services
                 }
             }
 
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> UpdateOrderStatusAsync(OrderStatusDto dto)
+        {
+            var delivery = await _context.Deliveries
+                .FirstOrDefaultAsync(d => d.OrderId == dto.OrderId);
+
+            if (delivery == null)
+            {
+                return false;
+            }
+
+            delivery.Status = dto.Status;
+            if (dto.Status == "Delivered")
+            {
+                delivery.DeliveryDate = DateTime.UtcNow.AddHours(7);
+
+                var payment = _context.Payments.FirstOrDefault(p => p.OrderId == dto.OrderId);
+                if (payment != null)
+                {
+                    payment.PaidAt = DateTime.UtcNow.AddHours(7);
+                    _context.Payments.Update(payment);
+                }
+            }
+            else if (dto.Status == "Canceled")
+            {
+                delivery.CancelDate = DateTime.UtcNow.AddHours(7);
+                delivery.CancelReason = dto.CancelReason;
+
+                var payment = _context.Payments.FirstOrDefault(p => p.OrderId == dto.OrderId);
+
+                if (payment != null)
+                {
+                    payment.PaidAt = null;
+                    _context.Payments.Update(payment);
+                }
+            }
+            else if (dto.Status == "Confirmed")
+            {
+                delivery.ConfirmDate = DateTime.UtcNow.AddHours(7);
+            }
+            else if (dto.Status == "Shipped")
+            {
+                delivery.ShipDate = DateTime.UtcNow.AddHours(7);
+            }
+
+            _context.Deliveries.Update(delivery);
             return await _context.SaveChangesAsync() > 0;
         }
 

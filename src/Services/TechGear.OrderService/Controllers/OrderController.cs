@@ -20,6 +20,13 @@ namespace TechGear.OrderService.Controllers
             return Ok(orders);
         }
 
+        [HttpGet("total")]
+        public async Task<IActionResult> GetTotalOrder()
+        {
+            var totalOrder = await _orderService.GetTotalOrderAsync();
+            return Ok(totalOrder);
+        }
+
         [Authorize]
         [HttpGet("get-by-user/{userId}")]
         public async Task<IActionResult> GetOrdersByUserId(int userId)
@@ -51,6 +58,18 @@ namespace TechGear.OrderService.Controllers
             return Ok(order);
         }
 
+        [HttpGet("{orderId}/detail")]
+        public async Task<IActionResult> GetOrderDetailById(int orderId)
+        {
+            var orderDetail = await _orderService.GetOrderDetailByIdAsync(orderId);
+            if (orderDetail == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(orderDetail);
+        }
+
         [HttpPost("create")]
         public async Task<IActionResult> CreateOrder([FromBody] OrderDto order)
         {
@@ -77,6 +96,22 @@ namespace TechGear.OrderService.Controllers
             }
 
             var result = await _orderService.UpdateOrderAsync(order);
+            if (!result)
+            {
+                return NotFound();
+            }
+            return NoContent();
+        }
+
+        [HttpPut("update-status/{orderId}")]
+        public async Task<IActionResult> UpdateOrderStatus(int orderId, [FromBody] OrderStatusDto orderStatus)
+        {
+            if (orderStatus.OrderId != orderId)
+            {
+                return BadRequest();
+            }
+
+            var result = await _orderService.UpdateOrderStatusAsync(orderStatus);
             if (!result)
             {
                 return NotFound();

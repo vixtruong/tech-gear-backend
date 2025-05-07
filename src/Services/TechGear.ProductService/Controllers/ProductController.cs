@@ -11,6 +11,14 @@ namespace TechGear.ProductService.Controllers
     {
         private readonly IProductService _productService = productService;
 
+        [HttpGet("all-for-admin")]
+        public async Task<IActionResult> GetAllProductsForAdmin()
+        {
+            var products = await _productService.GetAllProductsForAdminAsync();
+
+            return Ok(products);
+        }
+
         [HttpGet("all")]
         public async Task<IActionResult> GetAllProducts()
         {
@@ -26,6 +34,20 @@ namespace TechGear.ProductService.Controllers
 
             return Ok(products);
         }
+
+        [HttpPost("ids")]
+        public async Task<IActionResult> GetProductsByIds([FromBody] List<int> ids)
+        {
+            if (ids.Count == 0)
+            {
+                return BadRequest("Product IDs cannot be null or empty.");
+            }
+
+            var products = await _productService.GetProductsByIdsAsync(ids);
+
+            return Ok(products);
+        }
+
 
         [HttpGet("new")]
         public async Task<IActionResult> GetNewProducts()
@@ -55,7 +77,7 @@ namespace TechGear.ProductService.Controllers
             return Ok(product);
         }
 
-        [HttpPost]
+        [HttpPost("add")]
         public async Task<IActionResult> AddProduct([FromBody] ProductDto product)
         {
             var newProduct = await _productService.AddProductAsync(product);
@@ -66,6 +88,32 @@ namespace TechGear.ProductService.Controllers
             }
 
             return Ok(newProduct);
+        }
+
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateProduct([FromBody] ProductDto product)
+        {
+            var updated = await _productService.UpdateProductAsync(product);
+
+            if (!updated)
+            {
+                return NotFound();
+            }
+
+            return Ok(updated);
+        }
+
+        [HttpPut("toggle-status/{productId}")]
+        public async Task<IActionResult> ToggleProductStatus(int productId)
+        {
+            var toggled = await _productService.ToggleProductAvailable(productId);
+
+            if (!toggled)
+            {
+                return NotFound();
+            }
+
+            return Ok(toggled);
         }
     }
 }

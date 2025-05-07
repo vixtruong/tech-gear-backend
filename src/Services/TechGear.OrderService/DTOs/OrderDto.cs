@@ -14,6 +14,10 @@
         public string? Status { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? DeliveredDate { get; set; }
+        public DateTime? ConfirmedDate { get; set; }
+        public DateTime? ShippedDate { get; set; }
+        public DateTime? CanceledDate { get; set; }
+        public string? CancelReason { get; set; }
         public List<OrderItemDto>? OrderItems { get; set; }
     }
 

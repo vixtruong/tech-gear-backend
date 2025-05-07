@@ -1,4 +1,4 @@
-
+using System.Text.Json.Serialization; // ? thêm dòng này ? ??u file Program.cs
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -49,7 +49,12 @@ namespace TechGear.ProductService
                     });
             });
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                    options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+                });
 
             // Register services
             builder.Services.AddScoped<IBrandService, BrandService>();

@@ -46,7 +46,7 @@ namespace TechGear.UserService.Controllers
             return NotFound(new { message = "No favorite products found." });
         }
 
-        [HttpGet("is-favorite")]
+        [HttpPut("is-favorite")]
         public async Task<IActionResult> IsProductFavorite([FromBody] FavoriteDto dto)
         {
             var result = await _favoriteService.IsProductFavoriteAsync(dto.UserId, dto.ProductId);
@@ -57,5 +57,6 @@ namespace TechGear.UserService.Controllers
 
             return NotFound(new { message = "Product not in favorites." });
         }
+
     }
 }

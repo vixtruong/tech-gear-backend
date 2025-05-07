@@ -11,25 +11,41 @@ namespace TechGear.ProductService.Services
         private readonly TechGearProductServiceContext _context = context;
         private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
 
-        public async Task<IEnumerable<Product?>> GetAllProductsAsync()
+        public async Task<IEnumerable<Product?>> GetAllProductsForAdminAsync()
         {
             return await _context.Products.ToListAsync();
         }
 
+        public async Task<IEnumerable<Product?>> GetAllProductsAsync()
+        {
+            return await _context.Products.Where(p => p.Available).ToListAsync();
+        }
+
         public async Task<IEnumerable<Product?>> GetPromotionProductsAsync()
         {
-            return await _context.Products
-                .Include(p => p.ProductItems.Where(pi => pi.Discount > 0))
-                .Where(p => p.ProductItems.Any(pi => pi.Discount > 0))
+            var products = await _context.Products
+                .Where(p => p.Available)
+                .Include(p => p.ProductItems)
                 .ToListAsync();
+
+            foreach (var product in products)
+            {
+                product.ProductItems = product.ProductItems
+                    .Where(pi => pi.Discount > 0)
+                    .ToList();
+            }
+
+            return products.Where(p => p.ProductItems.Any()).ToList();
         }
+
+
 
         public async Task<IEnumerable<Product?>> GetNewProductsAsync()
         {
             var thresholdDate = DateTime.Now.AddDays(-14);
 
             return await _context.Products
-                .Where(p => p.CreateAt >= thresholdDate)
+                .Where(p => p.CreateAt >= thresholdDate && p.Available)
                 .ToListAsync();
         }
 
@@ -64,6 +80,7 @@ namespace TechGear.ProductService.Services
                 .ToList();
 
             var result = orderedProducts
+                .Where(p => p!.Available)
                 .Select(p => new ProductDto
                 {
                     Id = p!.Id,
@@ -81,9 +98,30 @@ namespace TechGear.ProductService.Services
             return result;
         }
 
+        public async Task<IEnumerable<ProductDto?>> GetProductsByIdsAsync(List<int> ids)
+        {
+            var products = await _context.Products
+                .Where(p => ids.Contains(p.Id) && p.Available)
+                .Select(p => new ProductDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    BrandId = p.BrandId,
+                    CategoryId = p.CategoryId,
+                    Description = p.Description,
+                    ProductImage = p.ProductImage,
+                    CreateAt = p.CreateAt,
+                    Available = p.Available,
+                    Price = p.Price
+                })
+                .ToListAsync();
+
+            return products;
+        }
+
         public async Task<Product?> GetProductByIdAsync(int productId)
         {
-            return await _context.Products.FirstOrDefaultAsync(p => p!.Id == productId);
+            return await _context.Products.FirstOrDefaultAsync(p => p!.Id == productId && p.Available);
         }
 
         public async Task<Product?> AddProductAsync(ProductDto productDto)
@@ -98,7 +136,7 @@ namespace TechGear.ProductService.Services
                 Name = productDto.Name,
                 Description = productDto.Description,
                 ProductImage = productDto.ProductImage,
-                CreateAt = DateTime.Now,
+                CreateAt = DateTime.Now.AddHours(7),
                 Available = productDto.Available,
                 Price = productDto.Price,
             };
@@ -108,7 +146,6 @@ namespace TechGear.ProductService.Services
 
             return entity;
         }
-
 
         public async Task<bool> UpdateProductAsync(ProductDto product)
         {
@@ -120,29 +157,22 @@ namespace TechGear.ProductService.Services
             existProduct.Description = product.Description;
             existProduct.ProductImage = product.ProductImage;
             existProduct.CategoryId = product.CategoryId;
+            existProduct.BrandId = product.BrandId;
             existProduct.Price = product.Price;
 
             await _context.SaveChangesAsync();
             return true;
         }
 
-        public async Task<bool> UpdateProductStatus(int id)
+        
+
+        public async Task<bool> ToggleProductAvailable(int id)
         {
             var existProduct = await _context.Products.FindAsync(id);
 
             if (existProduct == null) return false;
 
             existProduct.Available = !existProduct.Available;
-            return true;
-        }
-
-        public async Task<bool> DeleteProductAsync(int id)
-        {
-            var existProduct = await _context.Products.FindAsync(id);
-
-            if (existProduct == null) return false;
-
-            _context.Products.Remove(existProduct);
             await _context.SaveChangesAsync();
             return true;
         }

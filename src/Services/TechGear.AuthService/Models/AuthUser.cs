@@ -14,4 +14,6 @@ public partial class AuthUser
     public string HashedPassword { get; set; } = null!;
 
     public string Role { get; set; } = null!;
+
+    public bool IsActive { get; set; }
 }

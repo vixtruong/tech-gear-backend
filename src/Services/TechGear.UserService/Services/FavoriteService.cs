@@ -21,7 +21,6 @@ namespace TechGear.UserService.Services
             {
                 UserId = userId,
                 ProductId = productId,
-                AddedAt = DateTime.UtcNow
             };
 
             _context.Favorites.Add(favorite);

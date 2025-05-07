@@ -41,17 +41,30 @@ namespace TechGear.ProductService.Services
             return await _context.ProductItems.FirstOrDefaultAsync(pi => pi.Id == id);
         }
 
-        public async Task<List<int>?> GetPriceAsync(List<int> ids)
+        public async Task<List<decimal>?> GetPriceAsync(List<int> ids)
         {
             return await _context.ProductItems
                 .Where(pi => ids.Contains(pi.Id))
-                .Select(pi => pi.Price)
+                .Select(pi => pi.Price * (1 - (decimal)pi.Discount / 100))
                 .ToListAsync();
         }
+
 
         public async Task<IEnumerable<ProductItem?>> GetProductItemsByProductIdAsync(int productId)
         {
             return await _context.ProductItems.Where(pi => pi.ProductId == productId).ToListAsync();
+        }
+
+        public async Task<string?> GetCategoryByProductItemId(int productItemId)
+        {
+            var productItem = await _context.ProductItems
+                .Include(pi => pi.Product)
+                .ThenInclude(p => p.Category)
+                .FirstOrDefaultAsync(pi => pi.Id == productItemId);
+
+            if (productItem == null || productItem.Product?.Category == null)
+                return null;
+            return productItem.Product.Category.Name;
         }
 
         public async Task<ProductItem?> AddProductItemAsync(ProductItemDto productItem)
@@ -75,6 +88,20 @@ namespace TechGear.ProductService.Services
             await _context.SaveChangesAsync();
 
             return entity;
+        }
+
+        public async Task<bool> SetDiscountAsync(int productItemId, int discount)
+        {
+            var item = await _context.ProductItems.FindAsync(productItemId);
+
+            if (item == null)
+            {
+                return false;
+            }
+
+            item.Discount = discount;
+            await _context.SaveChangesAsync();
+            return true;
         }
 
 

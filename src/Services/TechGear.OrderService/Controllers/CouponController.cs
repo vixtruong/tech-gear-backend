@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TechGear.OrderService.DTOs;
 using TechGear.OrderService.Interfaces;
 using TechGear.OrderService.Models;
 
@@ -55,7 +56,7 @@ namespace TechGear.OrderService.Controllers
         //}
 
         [HttpPost("create")]
-        public async Task<IActionResult> CreateCoupon([FromBody] Coupon coupon)
+        public async Task<IActionResult> CreateCoupon([FromBody] CouponDto coupon)
         {
             if (ModelState.IsValid)
             {
@@ -81,7 +82,7 @@ namespace TechGear.OrderService.Controllers
         }
 
         [HttpPut("update")]
-        public async Task<IActionResult> UpdateCoupon([FromBody] Coupon coupon)
+        public async Task<IActionResult> UpdateCoupon([FromBody] CouponDto coupon)
         {
             if (ModelState.IsValid)
             {
@@ -93,6 +94,17 @@ namespace TechGear.OrderService.Controllers
                 return BadRequest("Failed to update coupon.");
             }
             return BadRequest(ModelState);
+        }
+
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteCoupon(int id)
+        {
+            var result = await _couponService.DeleteCouponAsync(id);
+            if (result)
+            {
+                return Ok(new { Message = "Coupon deleted successfully." });
+            }
+            return BadRequest("Failed to delete coupon.");
         }
 
         [HttpDelete("remove-usage/{code}")]

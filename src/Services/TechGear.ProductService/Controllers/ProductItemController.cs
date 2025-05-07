@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TechGear.ProductService.DTOs;
 using TechGear.ProductService.Interfaces;
 using TechGear.ProductService.Models;
@@ -66,6 +67,18 @@ namespace TechGear.ProductService.Controllers
             return Ok(prices);
         }
 
+        [HttpGet("{productItemId}/category")]
+        public async Task<IActionResult> GetCategoryNameByProductItemId(int productItemId)
+        {
+            var category = await _productItemService.GetCategoryByProductItemId(productItemId);
+
+            if (category == null)
+                return NotFound();
+
+            return Ok(category);
+        }
+
+
         [HttpPost("add")]
         public async Task<IActionResult> AddProductItem([FromBody] ProductItemDto item)
         {
@@ -77,6 +90,19 @@ namespace TechGear.ProductService.Controllers
             }
 
             return Ok(newItem);
+        }
+
+        [HttpPost("set-discount")]
+        public async Task<IActionResult> SetDiscount([FromBody] DiscountDto dto)
+        {
+            var isSet = await _productItemService.SetDiscountAsync(dto.ProductItemId, dto.Discount);
+
+            if (!isSet)
+            {
+                return NotFound();
+            }
+
+            return Ok(isSet);
         }
     }
 }

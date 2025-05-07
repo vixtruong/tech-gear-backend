@@ -52,6 +52,8 @@ public partial class TechGearUserServiceContext : DbContext
             entity.Property(e => e.Email).HasMaxLength(100);
             entity.Property(e => e.FullName).HasMaxLength(100);
             entity.Property(e => e.PhoneNumber).HasMaxLength(20);
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("datetime");
         });
 
         modelBuilder.Entity<Favorite>(entity =>

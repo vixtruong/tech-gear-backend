@@ -15,6 +15,13 @@ namespace TechGear.UserService.Controllers
             _userService = userService;
         }
 
+        [HttpGet("total")]
+        public async Task<IActionResult> GetTotalUser()
+        {
+            var totalUser = await _userService.GetTotalUserAsync();
+            return Ok(totalUser);
+        }
+
         [HttpPost("create")]
         public async Task<IActionResult> CreateUser([FromBody] UserDto user)
         {
@@ -52,6 +59,19 @@ namespace TechGear.UserService.Controllers
             }
 
             return Ok(user);
+        }
+
+        [HttpGet("{userId}/address")]
+        public async Task<IActionResult> GetUserAddressById(int userId, [FromQuery] int? userAddressId)
+        {
+            var address = await _userService.GetUserAddressByIdAsync(userId, userAddressId);
+
+            if (address == null)
+            {
+                return NotFound(new { message = "User address not found." });
+            }
+
+            return Ok(address);
         }
 
         [HttpGet("{userId}/name")]

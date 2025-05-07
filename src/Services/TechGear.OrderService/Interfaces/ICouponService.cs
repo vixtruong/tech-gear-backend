@@ -1,4 +1,5 @@
-﻿using TechGear.OrderService.Models;
+﻿using TechGear.OrderService.DTOs;
+using TechGear.OrderService.Models;
 
 namespace TechGear.OrderService.Interfaces
 {
@@ -9,8 +10,9 @@ namespace TechGear.OrderService.Interfaces
         Task<bool> IsCouponValidAsync(string code, decimal orderAmount);
         Task<bool> IsCouponExpiredAsync(string code);
         Task<bool> IsCouponUsageLimitReachedAsync(string code);
-        Task<bool> CreateCouponAsync(Coupon coupon);
-        Task<bool> UpdateCouponAsync(Coupon coupon);
+        Task<bool> CreateCouponAsync(CouponDto coupon);
+        Task<bool> UpdateCouponAsync(CouponDto coupon);
+        Task<bool> DeleteCouponAsync(int id);
         Task<bool> RemoveCouponUsageAsync(string code);
 
     }

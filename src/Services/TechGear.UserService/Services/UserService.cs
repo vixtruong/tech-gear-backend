@@ -15,6 +15,20 @@ namespace TechGear.UserService.Services
             _context = context;
         }
 
+        public async Task<TotalUserDto> GetTotalUserAsync()
+        {
+            var totalUsers = await _context.Users.CountAsync();
+            var newUsers = await _context.Users
+                .Where(u => u.CreatedAt >= DateTime.UtcNow.AddHours(7).AddDays(-30))
+                .CountAsync();
+
+            return new TotalUserDto
+            {
+                TotalUsers = totalUsers,
+                NewUsers = newUsers,
+            };
+        }
+
         public async Task<UserDto?> AddUserAsync(UserDto user)
         {
             if (string.IsNullOrWhiteSpace(user.Email) ||
@@ -87,6 +101,7 @@ namespace TechGear.UserService.Services
             user.FullName = dto.FullName;
             user.PhoneNumber = dto.PhoneNumber;
             user.Email = dto.Email;
+            user.CreatedAt = DateTime.Now.AddHours(7);
 
             _context.Users.Update(user);
             try
@@ -120,6 +135,28 @@ namespace TechGear.UserService.Services
                     .Select(ua => ua.Address)
                     .FirstOrDefault(),
             };
+        }
+
+        public async Task<UserAddressInfoDto?> GetUserAddressByIdAsync(int userId, int? userAddressId)
+        {
+            var user = await _context.Users
+                .Include(u => u.UserAddresses)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null) return null;
+
+            var address = user.UserAddresses
+                .Where(ua => ua.Id == userAddressId)
+                .Select(ua => new UserAddressInfoDto
+                {
+                    Email = user.Email,
+                    Address = ua.Address,
+                    RecipientName = ua.RecipientName,
+                    RecipientPhone = ua.RecipientPhone,
+                })
+                .FirstOrDefault();
+
+            return address;
         }
 
         public async Task<string> GetUserNameAsync(int userId)
