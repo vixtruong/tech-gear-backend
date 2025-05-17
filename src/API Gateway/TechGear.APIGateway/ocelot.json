@@ -6,8 +6,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5002
+          "Host": "techgear-auth-service.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/v1/auth/{everything}",
@@ -20,8 +20,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5003
+          "Host": "techgear-chat-service.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/v1/chats/{everything}",
@@ -34,8 +34,8 @@
       "DownstreamScheme": "wss",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5003
+          "Host": "techgear-chat-service.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/wss",
@@ -51,8 +51,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5006
+          "Host": "techgear-user-service.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/v1/users/{everything}",
@@ -63,8 +63,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5006
+          "Host": "techgear-user-service.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/v1/favorites/{everything}",
@@ -75,8 +75,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5006
+          "Host": "techgear-user-service.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/v1/loyalties/{everything}",
@@ -87,8 +87,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5006
+          "Host": "techgear-user-service.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/v1/addresses/{everything}",
@@ -101,8 +101,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5004
+          "Host": "techgear-order-service.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/v1/orders/{everything}",
@@ -113,8 +113,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5004
+          "Host": "techgear-order-service.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/v1/carts/{everything}",
@@ -125,8 +125,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5004
+          "Host": "techgear-order-service.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/v1/statistics/{everything}",
@@ -137,8 +137,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5004
+          "Host": "techgear-order-service.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/v1/coupons/{everything}",
@@ -151,8 +151,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5005
+          "Host": "techgear-product-service.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/v1/products/{everything}",
@@ -163,8 +163,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5005
+          "Host": "techgear-product-service.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/v1/brands/{everything}",
@@ -175,8 +175,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5005
+          "Host": "techgear-product-service.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/v1/categories/{everything}",
@@ -187,8 +187,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5005
+          "Host": "techgear-product-service.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/v1/productitems/{everything}",
@@ -199,8 +199,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5005
+          "Host": "techgear-product-service.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/v1/ratings/{everything}",
@@ -211,8 +211,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5005
+          "Host": "techgear-product-service.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/v1/variations/{everything}",
@@ -223,8 +223,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5005
+          "Host": "techgear-product-service.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/v1/variationoptions/{everything}",
@@ -235,8 +235,8 @@
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5005
+          "Host": "techgear-product-service.azurewebsites.net",
+          "Port": 443
         }
       ],
       "UpstreamPathTemplate": "/api/v1/productconfigs/{everything}",
@@ -244,6 +244,6 @@
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "https://localhost:5001"
+    "BaseUrl": "https://techgear-gateway.azurewebsites.net"
   }
 }

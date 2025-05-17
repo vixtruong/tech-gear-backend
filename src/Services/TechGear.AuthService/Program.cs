@@ -57,7 +57,7 @@ namespace TechGear.AuthService
 
             builder.Services.AddHttpClient("ApiGatewayClient", client =>
             {
-                client.BaseAddress = new Uri("https://localhost:5001");
+                client.BaseAddress = new Uri("https://techgear-gateway.azurewebsites.net");
             });
 
             var app = builder.Build();

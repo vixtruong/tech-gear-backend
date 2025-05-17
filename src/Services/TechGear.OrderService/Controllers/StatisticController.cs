@@ -90,5 +90,33 @@ namespace TechGear.OrderService.Controllers
             var result = await _statisticService.GetDataCustomAsync(start, end);
             return Ok(result);
         }
+
+        [HttpGet("annual-comparison")]
+        public async Task<ActionResult<ComparativeRevenueDto>> GetAnnualRevenueComparison()
+        {
+            var result = await _statisticService.GetAnnualRevenueComparisonAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("quarter-comparison")]
+        public async Task<ActionResult<ComparativeRevenueDto>> GetQuarterlyRevenueComparison()
+        {
+            var result = await _statisticService.GetQuarterlyRevenueComparisonAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("month-comparison")]
+        public async Task<ActionResult<ComparativeRevenueDto>> GetMonthlyRevenueComparison()
+        {
+            var result = await _statisticService.GetMonthlyRevenueComparisonAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("week-comparison")]
+        public async Task<ActionResult<ComparativeRevenueDto>> GetWeeklyRevenueComparison()
+        {
+            var result = await _statisticService.GetWeeklyRevenueComparisonAsync();
+            return Ok(result);
+        }
     }
 }

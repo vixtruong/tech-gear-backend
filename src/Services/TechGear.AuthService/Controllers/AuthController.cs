@@ -62,7 +62,8 @@ namespace TechGear.AuthService.Controllers
             {
                 UserId = createdUser.Id,
                 Email = user.Email,
-                Role = user.Role
+                Role = user.Role,
+                IsActive = true
             };
 
             var success = await _authService.RegisterAsync(newAccount, user.RawPassword ?? createdUser.PhoneNumber);

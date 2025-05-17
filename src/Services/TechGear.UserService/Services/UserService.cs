@@ -52,6 +52,7 @@ namespace TechGear.UserService.Services
                     Email = user.Email,
                     FullName = user.FullName,
                     PhoneNumber = user.PhoneNumber,
+                    CreatedAt = DateTime.UtcNow.AddHours(7),
                 };
 
                 _context.Users.Add(newUser);

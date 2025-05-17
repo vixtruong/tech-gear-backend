@@ -13,5 +13,9 @@ namespace TechGear.OrderService.Interfaces
         Task<MockDataDto> GetDataWeeklyAsync();
         Task<MockDataDto> GetDataCustomAsync(DateTime start, DateTime end);
         Task<IEnumerable<BestSellingDto>> GetBestSellingAsync();
+        Task<ComparativeRevenueDto> GetAnnualRevenueComparisonAsync();
+        Task<ComparativeRevenueDto> GetQuarterlyRevenueComparisonAsync();
+        Task<ComparativeRevenueDto> GetMonthlyRevenueComparisonAsync();
+        Task<ComparativeRevenueDto> GetWeeklyRevenueComparisonAsync();
     }
 }

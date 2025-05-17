@@ -101,14 +101,13 @@ namespace TechGear.OrderService.Services
             var startPrevious = start - previousPeriodLength;
             var endPrevious = start;
 
-            return await GetDataBetweenRanges(start, end, startPrevious, endPrevious);
+            return await GetDataBetweenRanges(start, endPrevious, startPrevious, endPrevious);
         }
 
         public async Task<IEnumerable<BestSellingDto>> GetBestSellingAsync()
         {
             try
             {
-                // B1: Group theo ProductItemId để tính tổng quantity
                 var itemQuantities = await _context.OrderItems
                     .GroupBy(oi => oi.ProductItemId)
                     .Select(g => new
@@ -119,8 +118,6 @@ namespace TechGear.OrderService.Services
                     .ToListAsync();
 
                 var client = _httpClientFactory.CreateClient("ApiGatewayClient");
-
-                // B2: Fetch Category cho từng ProductItemId
                 var categoryQuantities = new Dictionary<string, int>();
 
                 foreach (var item in itemQuantities)
@@ -146,7 +143,6 @@ namespace TechGear.OrderService.Services
                     }
                 }
 
-                // B3: Sắp xếp và lấy top 10 category
                 var result = categoryQuantities
                     .OrderByDescending(kv => kv.Value)
                     .Take(10)
@@ -166,6 +162,196 @@ namespace TechGear.OrderService.Services
             }
         }
 
+        // New methods for comparative revenue charts
+        public async Task<ComparativeRevenueDto> GetAnnualRevenueComparisonAsync()
+        {
+            var currentYear = DateTime.Now.Year;
+            var previousYear = currentYear - 1;
+
+            var currentQuarters = new List<PeriodRevenue>();
+            var previousQuarters = new List<PeriodRevenue>();
+
+            // Calculate revenue for each quarter of the current year
+            for (int quarter = 1; quarter <= 4; quarter++)
+            {
+                var start = new DateTime(currentYear, (quarter - 1) * 3 + 1, 1);
+                var end = start.AddMonths(3);
+
+                var revenue = await CalculateRevenueAsync(start, end);
+                currentQuarters.Add(new PeriodRevenue
+                {
+                    PeriodName = $"Q{quarter}",
+                    Revenue = revenue
+                });
+            }
+
+            // Calculate revenue for each quarter of the previous year
+            for (int quarter = 1; quarter <= 4; quarter++)
+            {
+                var start = new DateTime(previousYear, (quarter - 1) * 3 + 1, 1);
+                var end = start.AddMonths(3);
+
+                var revenue = await CalculateRevenueAsync(start, end);
+                previousQuarters.Add(new PeriodRevenue
+                {
+                    PeriodName = $"Q{quarter}",
+                    Revenue = revenue
+                });
+            }
+
+            return new ComparativeRevenueDto
+            {
+                CurrentPeriod = currentQuarters,
+                PreviousPeriod = previousQuarters
+            };
+        }
+
+        public async Task<ComparativeRevenueDto> GetQuarterlyRevenueComparisonAsync()
+        {
+            var now = DateTime.Now;
+            int currentQuarter = (now.Month - 1) / 3 + 1;
+
+            var currentQuarterStart = new DateTime(now.Year, (currentQuarter - 1) * 3 + 1, 1);
+            var previousQuarterStart = currentQuarterStart.AddMonths(-3);
+
+            var currentMonths = new List<PeriodRevenue>();
+            var previousMonths = new List<PeriodRevenue>();
+
+            // Calculate revenue for each month of the current quarter
+            for (int i = 0; i < 3; i++)
+            {
+                var start = currentQuarterStart.AddMonths(i);
+                var end = start.AddMonths(1);
+
+                var revenue = await CalculateRevenueAsync(start, end);
+                currentMonths.Add(new PeriodRevenue
+                {
+                    PeriodName = start.ToString("MMM"),
+                    Revenue = revenue
+                });
+            }
+
+            // Calculate revenue for each month of the previous quarter
+            for (int i = 0; i < 3; i++)
+            {
+                var start = previousQuarterStart.AddMonths(i);
+                var end = start.AddMonths(1);
+
+                var revenue = await CalculateRevenueAsync(start, end);
+                previousMonths.Add(new PeriodRevenue
+                {
+                    PeriodName = start.ToString("MMM"),
+                    Revenue = revenue
+                });
+            }
+
+            return new ComparativeRevenueDto
+            {
+                CurrentPeriod = currentMonths,
+                PreviousPeriod = previousMonths
+            };
+        }
+
+        public async Task<ComparativeRevenueDto> GetMonthlyRevenueComparisonAsync()
+        {
+            var now = DateTime.Now;
+            var currentMonthStart = new DateTime(now.Year, now.Month, 1);
+            var previousMonthStart = currentMonthStart.AddMonths(-1);
+
+            var currentWeeks = new List<PeriodRevenue>();
+            var previousWeeks = new List<PeriodRevenue>();
+
+            // Calculate revenue for each week of the current month
+            var weekStart = currentMonthStart;
+            int weekNumber = 1;
+            while (weekStart < currentMonthStart.AddMonths(1))
+            {
+                var weekEnd = weekStart.AddDays(7) < currentMonthStart.AddMonths(1)
+                    ? weekStart.AddDays(7)
+                    : currentMonthStart.AddMonths(1);
+
+                var revenue = await CalculateRevenueAsync(weekStart, weekEnd);
+                currentWeeks.Add(new PeriodRevenue
+                {
+                    PeriodName = $"Week {weekNumber}",
+                    Revenue = revenue
+                });
+
+                weekStart = weekEnd;
+                weekNumber++;
+            }
+
+            // Calculate revenue for each week of the previous month
+            weekStart = previousMonthStart;
+            weekNumber = 1;
+            while (weekStart < previousMonthStart.AddMonths(1))
+            {
+                var weekEnd = weekStart.AddDays(7) < previousMonthStart.AddMonths(1)
+                    ? weekStart.AddDays(7)
+                    : previousMonthStart.AddMonths(1);
+
+                var revenue = await CalculateRevenueAsync(weekStart, weekEnd);
+                previousWeeks.Add(new PeriodRevenue
+                {
+                    PeriodName = $"Week {weekNumber}",
+                    Revenue = revenue
+                });
+
+                weekStart = weekEnd;
+                weekNumber++;
+            }
+
+            return new ComparativeRevenueDto
+            {
+                CurrentPeriod = currentWeeks,
+                PreviousPeriod = previousWeeks
+            };
+        }
+
+        public async Task<ComparativeRevenueDto> GetWeeklyRevenueComparisonAsync()
+        {
+            var now = DateTime.Now;
+            var startOfWeek = now.AddDays(-(int)now.DayOfWeek + 1); // Monday
+            var currentWeekStart = startOfWeek.Date;
+            var previousWeekStart = currentWeekStart.AddDays(-7);
+
+            var currentDays = new List<PeriodRevenue>();
+            var previousDays = new List<PeriodRevenue>();
+
+            // Calculate revenue for each day of the current week
+            for (int i = 0; i < 7; i++)
+            {
+                var dayStart = currentWeekStart.AddDays(i);
+                var dayEnd = dayStart.AddDays(1);
+
+                var revenue = await CalculateRevenueAsync(dayStart, dayEnd);
+                currentDays.Add(new PeriodRevenue
+                {
+                    PeriodName = dayStart.ToString("ddd"),
+                    Revenue = revenue
+                });
+            }
+
+            // Calculate revenue for each day of the previous week
+            for (int i = 0; i < 7; i++)
+            {
+                var dayStart = previousWeekStart.AddDays(i);
+                var dayEnd = dayStart.AddDays(1);
+
+                var revenue = await CalculateRevenueAsync(dayStart, dayEnd);
+                previousDays.Add(new PeriodRevenue
+                {
+                    PeriodName = dayStart.ToString("ddd"),
+                    Revenue = revenue
+                });
+            }
+
+            return new ComparativeRevenueDto
+            {
+                CurrentPeriod = currentDays,
+                PreviousPeriod = previousDays
+            };
+        }
 
         private async Task<MockDataDto> GetDataBetweenRanges(
             DateTime startCurrent, DateTime endCurrent,
@@ -198,5 +384,22 @@ namespace TechGear.OrderService.Services
             };
         }
 
+        private async Task<decimal> CalculateRevenueAsync(DateTime start, DateTime end)
+        {
+            try
+            {
+                var orders = await _context.Orders
+                    .Where(o => o.CreateAt >= start && o.CreateAt < end)
+                    .Include(o => o.Payments)
+                    .ToListAsync();
+
+                return orders.Sum(o => o.Payments.Sum(p => p.Amount));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in CalculateRevenueAsync: {ex.Message}");
+                return 0;
+            }
+        }
     }
 }
