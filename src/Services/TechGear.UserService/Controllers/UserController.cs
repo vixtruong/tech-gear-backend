@@ -103,7 +103,7 @@ namespace TechGear.UserService.Controllers
         [HttpPut("{userId}/points")]
         public async Task<IActionResult> UpdateUserPoints(int userId, [FromBody] UsePointDto dto)
         {
-            var success = await _userService.UpdatePointAsync(userId, dto.OrderId ,dto.Point);
+            var success = await _userService.UpdatePointAsync(userId, dto.OrderId, dto.Point, dto.Action);
 
             if (!success)
             {

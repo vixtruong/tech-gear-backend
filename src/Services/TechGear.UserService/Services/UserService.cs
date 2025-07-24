@@ -173,7 +173,7 @@ namespace TechGear.UserService.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<bool> UpdatePointAsync(int userId, int orderId ,int usedPoint)
+        public async Task<bool> UpdatePointAsync(int userId, int orderId, int usedPoint, string action)
         {
             var user = await _context.Users.FindAsync(userId);
             if (user == null)
@@ -193,7 +193,7 @@ namespace TechGear.UserService.Services
                 UserId = userId,
                 FromOrderId = orderId,
                 Point = -usedPoint,
-                Action = "use",
+                Action = action,
                 CreatedAt = DateTime.UtcNow.AddHours(7),
             };
 

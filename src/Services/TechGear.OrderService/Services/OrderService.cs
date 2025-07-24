@@ -449,6 +449,28 @@ namespace TechGear.OrderService.Services
             else if (dto.Status == "Shipped")
             {
                 delivery.ShipDate = DateTime.UtcNow.AddHours(7);
+
+                var client = _httpClientFactory.CreateClient("ApiGatewayClient");
+
+                var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == dto.OrderId);
+
+                if (order != null)
+                {
+                    var usePointDto = new UsePointDto
+                    {
+                        OrderId = dto.OrderId,
+                        Point = order.TotalAmount * 10 / 100,
+                        Action = "get"
+                    };
+
+                    var response = await client.PutAsJsonAsync(
+                        $"api/v1/users/{order.UserId}/points", usePointDto);
+                    
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new Exception("Failed to update user points.");
+                    }
+                }
             }
 
             _context.Deliveries.Update(delivery);
